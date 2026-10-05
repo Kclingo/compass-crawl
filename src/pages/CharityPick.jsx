@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Check } from 'lucide-react';
+import { Check, CheckCircle2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import useCurrentEvent from '@/hooks/useCurrentEvent';
@@ -13,12 +13,25 @@ export default function CharityPick() {
   const { ticket, pick, loading: ticketLoading, reload } = useMyTicket(event?.id);
   const [charities, setCharities] = useState([]);
   const [saving, setSaving] = useState(false);
+  const [paid, setPaid] = useState(false);
 
   useEffect(() => {
     base44.entities.Charity.filter({ active: true }, { sort: 'sort_order', limit: 20 }).then((page) =>
       setCharities(page.items)
     );
   }, []);
+
+  useEffect(() => {
+    const sessionId = new URLSearchParams(window.location.search).get('session_id');
+    if (!sessionId || !event?.id) return;
+    base44.functions
+      .invoke('confirmTicketPayment', { session_id: sessionId })
+      .then((response) => {
+        if (response.data?.status === 'paid') setPaid(true);
+        return reload();
+      })
+      .finally(() => window.history.replaceState({}, '', '/charity'));
+  }, [event?.id, reload]);
 
   if (eventLoading || ticketLoading) {
     return <div className="h-8 w-8 animate-spin rounded-full border-4 border-border border-t-primary" />;
@@ -58,6 +71,11 @@ export default function CharityPick() {
 
   return (
     <div className="space-y-5">
+      {paid && (
+        <p className="flex items-center gap-2 rounded-lg bg-secondary p-3 text-sm text-secondary-foreground">
+          <CheckCircle2 className="h-4 w-4 text-accent" /> Payment received. Now pick where your donation goes.
+        </p>
+      )}
       <div>
         <h1 className="font-heading text-3xl uppercase tracking-[0.15em]">Where should it go?</h1>
         <p className="mt-1 text-sm text-muted-foreground">

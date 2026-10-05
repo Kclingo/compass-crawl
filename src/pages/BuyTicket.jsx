@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { CheckCircle2, Ticket as TicketIcon } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,6 @@ const SOURCES = ['Instagram', 'Friend or word of mouth', 'A provider', 'The venu
 const FIRST_CRAWL = ['Yes, my first', "No, I've been before", 'Prefer not to say'];
 
 export default function BuyTicket() {
-  const navigate = useNavigate();
   const { event, loading: eventLoading } = useCurrentEvent();
   const { ticket, loading: ticketLoading } = useMyTicket(event?.id);
   const [sold, setSold] = useState(null);
@@ -73,7 +72,7 @@ export default function BuyTicket() {
     setError(match ? '' : 'That code is not valid for this event.');
   }
 
-  async function submit() {
+  async function startCheckout() {
     if (!form.attendee_name.trim() || !form.email.trim()) {
       setError('Name and email are required.');
       return;
@@ -82,25 +81,48 @@ export default function BuyTicket() {
       setError('Please confirm you are 18 or older.');
       return;
     }
+    setError('');
+
+    // Open the checkout tab in the same click, before awaiting, so popup blockers allow it.
+    const isFramed = window.self !== window.top;
+    const checkoutTab = isFramed ? window.open('', '_blank') : null;
+    if (isFramed && !checkoutTab) {
+      setError('Allow popups to continue to checkout.');
+      return;
+    }
+    if (checkoutTab) checkoutTab.opener = null;
+
     setSubmitting(true);
     try {
-      await base44.entities.Ticket.create({
-        event_id: event.id,
-        ...form,
-        price_tier: tier.tier,
-        amount_paid: total,
-        promo_code: promo?.code || '',
-        payment_status: 'pending',
-        status: 'active',
-      });
-      navigate('/charity');
+      let ticketId = ticket?.id;
+      if (!ticketId) {
+        const created = await base44.entities.Ticket.create({
+          event_id: event.id,
+          ...form,
+          price_tier: tier.tier,
+          amount_paid: total,
+          promo_code: promo?.code || '',
+          payment_status: 'pending',
+          status: 'active',
+        });
+        ticketId = created.id;
+      }
+      const response = await base44.functions.invoke('createTicketCheckout', { ticket_id: ticketId });
+      const url = response.data?.url;
+      if (!url) throw new Error(response.data?.error || 'Checkout could not be started.');
+      if (checkoutTab) {
+        checkoutTab.location.replace(url);
+      } else {
+        window.location.assign(url);
+      }
     } catch (e) {
-      setError('Something went wrong saving your ticket. Please try again.');
+      checkoutTab?.close();
+      setError(e?.response?.data?.error || e?.message || 'Checkout could not be started.');
       setSubmitting(false);
     }
   }
 
-  if (ticket) {
+  if (ticket && ticket.payment_status === 'paid') {
     return (
       <div className="rounded-lg border border-border bg-card p-5 text-center">
         <CheckCircle2 className="mx-auto h-8 w-8 text-accent" />
@@ -242,15 +264,20 @@ export default function BuyTicket() {
         </div>
       </div>
 
+      {ticket && ticket.payment_status !== 'paid' && (
+        <p className="rounded-lg bg-secondary p-3 text-sm text-secondary-foreground">
+          Your spot is held. Finish payment to lock it in.
+        </p>
+      )}
+
       {error && <p className="text-sm text-destructive">{error}</p>}
 
-      <Button className="w-full" onClick={submit} disabled={submitting}>
+      <Button className="w-full" onClick={startCheckout} disabled={submitting}>
         <TicketIcon className="mr-2 h-4 w-4" />
-        {submitting ? 'Saving…' : `Reserve my spot · ${money(total)}`}
+        {submitting ? 'Opening checkout…' : `Pay ${money(total)}`}
       </Button>
       <p className="text-center text-xs text-muted-foreground">
-        Secure card, Apple Pay and Google Pay checkout switches on once the payment connection is approved. Your spot
-        and your donation pick are saved either way.
+        Card, Apple Pay, and Google Pay. The app never handles your card details, and your donation stays whole.
       </p>
     </div>
   );
