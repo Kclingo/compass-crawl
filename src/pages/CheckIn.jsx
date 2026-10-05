@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import useCurrentEvent from '@/hooks/useCurrentEvent';
+import BackLink from '@/components/BackLink';
 import useMyTicket from '@/hooks/useMyTicket';
 import { formatEventDate, formatClock } from '@/lib/compass';
 
@@ -62,6 +63,7 @@ export default function CheckIn() {
 
   return (
     <div className="space-y-5">
+      <BackLink to="/" label="My passport" />
       <div>
         <h1 className="font-heading text-3xl uppercase tracking-[0.15em]">Check in</h1>
         <p className="mt-1 text-sm text-muted-foreground">

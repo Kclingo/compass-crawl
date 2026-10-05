@@ -4,6 +4,7 @@ import { Check, CheckCircle2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import useCurrentEvent from '@/hooks/useCurrentEvent';
+import BackLink from '@/components/BackLink';
 import useMyTicket from '@/hooks/useMyTicket';
 import { money } from '@/lib/compass';
 import { cn } from '@/lib/utils';
@@ -71,6 +72,7 @@ export default function CharityPick() {
 
   return (
     <div className="space-y-5">
+      <BackLink to="/" label="My passport" />
       {paid && (
         <p className="flex items-center gap-2 rounded-lg bg-secondary p-3 text-sm text-secondary-foreground">
           <CheckCircle2 className="h-4 w-4 text-accent" /> Payment received. Now pick where your donation goes.

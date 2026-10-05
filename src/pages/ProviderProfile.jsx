@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { ArrowRight, Bookmark, BookmarkCheck, Mail, Stamp } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import ProviderAvatar from '@/components/ProviderAvatar';
+import BackLink from '@/components/BackLink';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import useCurrentEvent from '@/hooks/useCurrentEvent';
@@ -78,6 +79,7 @@ export default function ProviderProfile() {
 
   return (
     <div className="space-y-5">
+      <BackLink to="/providers" label="All providers" />
       <div className="flex items-center gap-4">
         <ProviderAvatar provider={provider} className="h-20 w-20 text-2xl" />
         <div className="min-w-0">

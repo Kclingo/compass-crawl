@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { SelectField, TextField } from '@/components/admin/fields';
 import useCurrentEvent from '@/hooks/useCurrentEvent';
+import BackLink from '@/components/BackLink';
 import useMyTicket from '@/hooks/useMyTicket';
 import { formatEventDate, money, resolveTicketTier } from '@/lib/compass';
 
@@ -157,6 +158,7 @@ export default function BuyTicket() {
 
   return (
     <div className="space-y-5">
+      <BackLink to="/" label="My passport" />
       <div>
         <h1 className="font-heading text-3xl uppercase tracking-[0.15em]">Your ticket</h1>
         <p className="mt-1 text-sm text-muted-foreground">

@@ -9,6 +9,7 @@ import StarRating from '@/components/StarRating';
 import { SelectField } from '@/components/admin/fields';
 import useCurrentEvent from '@/hooks/useCurrentEvent';
 import useMyTicket from '@/hooks/useMyTicket';
+import BackLink from '@/components/BackLink';
 import useEventProviders from '@/hooks/useEventProviders';
 
 const RETURN_OPTIONS = ['Definitely', 'Probably', 'Not sure', 'Probably not'];
@@ -106,6 +107,7 @@ export default function Feedback() {
 
   return (
     <div className="space-y-5">
+      <BackLink to="/" label="My passport" />
       <div>
         <h1 className="font-heading text-3xl uppercase tracking-[0.15em]">How was tonight?</h1>
         <p className="mt-1 text-sm text-muted-foreground">

@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import useMyTicket from '@/hooks/useMyTicket';
+import BackLink from '@/components/BackLink';
 import { formatClock } from '@/lib/compass';
 
 export default function StampPage() {
@@ -116,6 +117,7 @@ export default function StampPage() {
 
   return (
     <div className="space-y-4">
+      <BackLink to={`/providers/${slot.provider_id}`} label="Provider" />
       <div className="rounded-lg bg-primary p-5 text-center text-primary-foreground">
         <p className="text-[11px] uppercase tracking-[0.25em] text-secondary">
           Table {slot.table_number || '—'} · {formatClock(slot.showcase_time)}
