@@ -1,0 +1,41 @@
+{
+  "name": "Reminder",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string"
+    },
+    "ticket_id": {
+      "type": "string"
+    },
+    "event_provider_id": {
+      "type": "string"
+    },
+    "remind_at": {
+      "type": "string"
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "in_app",
+        "sms",
+        "push"
+      ],
+      "default": "in_app"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "sent",
+        "cancelled"
+      ],
+      "default": "pending"
+    }
+  },
+  "required": [
+    "event_id",
+    "ticket_id",
+    "event_provider_id"
+  ]
+}

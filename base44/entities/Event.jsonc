@@ -1,0 +1,116 @@
+{
+  "name": "Event",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "start_time": {
+      "type": "string"
+    },
+    "welcome_time": {
+      "type": "string"
+    },
+    "last_call_time": {
+      "type": "string"
+    },
+    "end_time": {
+      "type": "string"
+    },
+    "venue": {
+      "type": "string"
+    },
+    "awareness_theme": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "live",
+        "closed"
+      ],
+      "default": "draft"
+    },
+    "donation_amount": {
+      "type": "number",
+      "default": 5
+    },
+    "general_price": {
+      "type": "number",
+      "default": 20
+    },
+    "early_bird_price": {
+      "type": "number",
+      "default": 15
+    },
+    "early_bird_limit": {
+      "type": "number",
+      "default": 15
+    },
+    "early_bird_ends": {
+      "type": "string",
+      "format": "date"
+    },
+    "ceiling_price": {
+      "type": "number",
+      "default": 25
+    },
+    "ticket_cap": {
+      "type": "number",
+      "default": 40
+    },
+    "slot_length_minutes": {
+      "type": "number",
+      "default": 20
+    },
+    "showcases_at_a_time": {
+      "type": "number",
+      "default": 1
+    },
+    "pass_fees_to_buyer": {
+      "type": "boolean",
+      "default": true
+    },
+    "fee_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "check_in_open": {
+      "type": "boolean",
+      "default": true
+    },
+    "feedback_open": {
+      "type": "boolean",
+      "default": false
+    },
+    "promo_codes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "percent_off": {
+            "type": "number"
+          },
+          "label": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "title",
+    "date"
+  ]
+}

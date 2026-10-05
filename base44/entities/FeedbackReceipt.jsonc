@@ -1,0 +1,23 @@
+{
+  "name": "FeedbackReceipt",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string"
+    },
+    "ticket_id": {
+      "type": "string"
+    },
+    "submitted": {
+      "type": "boolean",
+      "default": true
+    },
+    "submitted_at": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_id",
+    "ticket_id"
+  ]
+}

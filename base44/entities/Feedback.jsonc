@@ -1,0 +1,44 @@
+{
+  "name": "Feedback",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string"
+    },
+    "overall_rating": {
+      "type": "number"
+    },
+    "provider_ratings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "provider_id": {
+            "type": "string"
+          },
+          "provider_name": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "highlights": {
+      "type": "string"
+    },
+    "improvements": {
+      "type": "string"
+    },
+    "would_return": {
+      "type": "string"
+    },
+    "transcript": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_id"
+  ]
+}

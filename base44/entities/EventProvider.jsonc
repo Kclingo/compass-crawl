@@ -1,0 +1,38 @@
+{
+  "name": "EventProvider",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string"
+    },
+    "provider_id": {
+      "type": "string"
+    },
+    "table_number": {
+      "type": "string"
+    },
+    "showcase_title": {
+      "type": "string"
+    },
+    "showcase_description": {
+      "type": "string"
+    },
+    "showcase_time": {
+      "type": "string"
+    },
+    "showcase_order": {
+      "type": "number"
+    },
+    "stamp_code": {
+      "type": "string"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "event_id",
+    "provider_id"
+  ]
+}

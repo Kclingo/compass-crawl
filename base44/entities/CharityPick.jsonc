@@ -1,0 +1,24 @@
+{
+  "name": "CharityPick",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string"
+    },
+    "ticket_id": {
+      "type": "string"
+    },
+    "charity_id": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "number",
+      "default": 5
+    }
+  },
+  "required": [
+    "event_id",
+    "ticket_id",
+    "charity_id"
+  ]
+}

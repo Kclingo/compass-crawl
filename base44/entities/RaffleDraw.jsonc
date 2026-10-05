@@ -1,0 +1,31 @@
+{
+  "name": "RaffleDraw",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string"
+    },
+    "prize": {
+      "type": "string"
+    },
+    "winning_ticket_id": {
+      "type": "string"
+    },
+    "winner_name": {
+      "type": "string"
+    },
+    "drawn_at": {
+      "type": "string"
+    },
+    "is_redraw": {
+      "type": "boolean",
+      "default": false
+    },
+    "note": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_id"
+  ]
+}

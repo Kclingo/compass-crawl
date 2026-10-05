@@ -1,0 +1,52 @@
+{
+  "name": "Provider",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "photo": {
+      "type": "string"
+    },
+    "business": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "bio": {
+      "type": "string"
+    },
+    "services": {
+      "type": "string"
+    },
+    "booking_link": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "instagram": {
+      "type": "string"
+    },
+    "tiktok": {
+      "type": "string"
+    },
+    "linkedin": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "offer": {
+      "type": "string"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "SavedProvider",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "provider_id": {
+      "type": "string"
+    },
+    "event_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "user_id",
+    "provider_id"
+  ]
+}
