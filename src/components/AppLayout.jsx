@@ -1,15 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
-import { CalendarDays, Compass, SlidersHorizontal, Users } from 'lucide-react';
+import { Compass } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { cn } from '@/lib/utils';
 import ShowcaseAlert from '@/components/ShowcaseAlert';
-
-const BASE_ITEMS = [
-  { to: '/', label: 'Passport', icon: Compass, end: true },
-  { to: '/schedule', label: 'Schedule', icon: CalendarDays },
-  { to: '/providers', label: 'Providers', icon: Users },
-];
+import AppNav, { BACK_OFFICE_ITEM, PRIMARY_ITEMS } from '@/components/AppNav';
 
 export default function AppLayout() {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -27,28 +22,29 @@ export default function AppLayout() {
     };
   }, []);
 
-  const items = isAdmin
-    ? [...BASE_ITEMS, { to: '/admin', label: 'Back office', icon: SlidersHorizontal }]
-    : BASE_ITEMS;
+  const items = isAdmin ? [...PRIMARY_ITEMS, BACK_OFFICE_ITEM] : PRIMARY_ITEMS;
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-24 lg:pb-12">
       <header className="border-b border-border bg-background">
-        <div className="mx-auto flex h-[92px] max-w-2xl items-center gap-[17px] px-5 sm:h-[112px]">
-          <Compass className="h-8 w-8 shrink-0 text-foreground" />
-          <Link to="/" className="font-heading text-[23px] uppercase tracking-[0.25em] text-foreground">
-            Compass Crawl
-          </Link>
+        <div className="mx-auto max-w-2xl px-5 lg:max-w-4xl">
+          <div className="flex h-[92px] items-center gap-[17px] sm:h-[112px]">
+            <Compass className="h-8 w-8 shrink-0 text-foreground" />
+            <Link to="/" className="font-heading text-[23px] uppercase tracking-[0.25em] text-foreground">
+              Compass Crawl
+            </Link>
+          </div>
+          <AppNav isAdmin={isAdmin} />
         </div>
       </header>
 
       <ShowcaseAlert />
 
-      <main className="mx-auto max-w-2xl px-5 py-8 sm:py-12">
+      <main className="mx-auto max-w-2xl px-5 py-8 sm:py-12 lg:max-w-4xl">
         <Outlet />
       </main>
 
-      <nav className="fixed inset-x-0 bottom-0 border-t border-border bg-background">
+      <nav aria-label="Sections" className="fixed inset-x-0 bottom-0 border-t border-border bg-background lg:hidden">
         <div className="mx-auto flex h-[72px] max-w-2xl sm:h-[95px]">
           {items.map((item) => (
             <NavLink
