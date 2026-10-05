@@ -121,7 +121,7 @@ export default function Schedule() {
               )}
             >
               <div className="flex items-start gap-4">
-                <span className="w-16 shrink-0 font-heading text-lg text-accent">{formatClock(row.time)}</span>
+                <span className="w-16 shrink-0 font-heading text-lg text-accent-strong">{formatClock(row.time)}</span>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <p className="text-sm font-medium">{row.label}</p>

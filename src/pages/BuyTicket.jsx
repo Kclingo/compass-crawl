@@ -133,7 +133,7 @@ export default function BuyTicket() {
   if (ticket && ticket.payment_status === 'paid') {
     return (
       <div className="rounded-lg border border-border bg-card p-5 text-center">
-        <CheckCircle2 className="mx-auto h-8 w-8 text-accent" />
+        <CheckCircle2 className="mx-auto h-8 w-8 text-accent-strong" />
         <p className="mt-2 font-heading text-xl">You&rsquo;re already on the list</p>
         <p className="mt-1 text-sm text-muted-foreground">
           One passport per guest. Head to your passport to check in.
@@ -166,10 +166,10 @@ export default function BuyTicket() {
         </p>
       </div>
 
-      <div className="rounded-lg border border-accent/40 bg-card p-4">
+      <div className="rounded-lg border border-accent bg-card p-4">
         <div className="flex items-baseline justify-between">
           <p className="font-medium">{tier.label}</p>
-          <p className="font-heading text-2xl text-accent">{money(tier.price)}</p>
+          <p className="font-heading text-2xl text-accent-strong">{money(tier.price)}</p>
         </div>
         <p className="mt-1 text-xs text-muted-foreground">
           {money(event.donation_amount)} of every ticket goes to the nonprofit you pick. {sold} of{' '}
@@ -221,7 +221,7 @@ export default function BuyTicket() {
           </Button>
         </div>
         {promo && (
-          <p className="text-xs text-accent">
+          <p className="text-xs text-accent-strong">
             {promo.label || promo.code} applied · {promo.percent_off}% off
           </p>
         )}

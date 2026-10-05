@@ -33,10 +33,10 @@ export default function AppLayout() {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <header className="bg-primary text-primary-foreground">
-        <div className="mx-auto flex max-w-2xl items-center gap-3 px-5 py-4">
-          <Compass className="h-6 w-6 text-secondary" />
-          <Link to="/" className="font-heading text-xl uppercase tracking-[0.3em]">
+      <header className="border-b border-border bg-background">
+        <div className="mx-auto flex h-[92px] max-w-2xl items-center gap-[17px] px-5 sm:h-[112px]">
+          <Compass className="h-8 w-8 shrink-0 text-foreground" />
+          <Link to="/" className="font-heading text-[23px] uppercase tracking-[0.25em] text-foreground">
             Compass Crawl
           </Link>
         </div>
@@ -44,12 +44,12 @@ export default function AppLayout() {
 
       <ShowcaseAlert />
 
-      <main className="mx-auto max-w-2xl px-5 py-6">
+      <main className="mx-auto max-w-2xl px-5 py-8 sm:py-12">
         <Outlet />
       </main>
 
-      <nav className="fixed inset-x-0 bottom-0 border-t border-border bg-card">
-        <div className="mx-auto flex max-w-2xl">
+      <nav className="fixed inset-x-0 bottom-0 border-t border-border bg-background">
+        <div className="mx-auto flex h-[72px] max-w-2xl sm:h-[95px]">
           {items.map((item) => (
             <NavLink
               key={item.to}
@@ -57,13 +57,27 @@ export default function AppLayout() {
               end={item.end}
               className={({ isActive }) =>
                 cn(
-                  'flex flex-1 flex-col items-center gap-1 py-2.5 text-[11px]',
-                  isActive ? 'text-accent' : 'text-muted-foreground'
+                  'flex flex-1 flex-col items-center justify-center gap-2 text-[11px] transition-colors duration-200',
+                  isActive
+                    ? 'text-foreground'
+                    : 'text-muted-foreground hover:bg-wash hover:text-foreground active:text-accent-strong'
                 )
               }
             >
-              <item.icon className="h-5 w-5" />
-              {item.label}
+              {({ isActive }) => (
+                <>
+                  <item.icon className="h-5 w-5" />
+                  <span
+                    className={cn(
+                      'relative',
+                      isActive &&
+                        "after:absolute after:-bottom-[9px] after:inset-x-0 after:h-0.5 after:bg-accent after:content-['']"
+                    )}
+                  >
+                    {item.label}
+                  </span>
+                </>
+              )}
             </NavLink>
           ))}
         </div>

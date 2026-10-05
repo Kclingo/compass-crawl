@@ -49,7 +49,7 @@ export default function ShowcaseAlert() {
 
   return (
     <div className="mx-auto mt-3 flex max-w-2xl items-start gap-3 rounded-lg border border-accent bg-secondary px-4 py-3 text-secondary-foreground">
-      <BellRing className="mt-0.5 h-5 w-5 text-accent" />
+      <BellRing className="mt-0.5 h-5 w-5 text-accent-strong" />
       <div className="flex-1 text-sm">
         <p className="font-medium">
           {minutes <= 0 ? 'Starting now' : `In ${minutes} min`} · {provider?.name}

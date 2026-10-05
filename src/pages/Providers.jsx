@@ -4,8 +4,12 @@ import { base44 } from '@/api/base44Client';
 import ProviderCard from '@/components/ProviderCard';
 import useCurrentEvent from '@/hooks/useCurrentEvent';
 import useEventProviders from '@/hooks/useEventProviders';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+
+const TABS = [
+  { key: 'all', label: 'Everyone' },
+  { key: 'saved', label: 'My providers' },
+];
 
 export default function Providers() {
   const { event } = useCurrentEvent();
@@ -61,40 +65,47 @@ export default function Providers() {
   const showcaseFor = (providerId) => eventProviders.find((ep) => ep.provider_id === providerId);
 
   return (
-    <div className="space-y-5">
-      <div>
-        <h1 className="font-heading text-3xl uppercase tracking-[0.15em]">Providers</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+    <div>
+      <section className="mb-[42px]">
+        <h1 className="relative mb-[19px] pb-6 font-heading text-[34px] font-normal uppercase leading-[1.05] tracking-[0.14em] sm:text-[46px] lg:text-[58px]">
+          Providers
+          <span aria-hidden="true" className="absolute bottom-0 left-0 h-px w-full origin-left animate-draw bg-foreground" />
+        </h1>
+        <p className="max-w-[760px] text-base leading-[1.8] text-muted-foreground">
           Say hi at the table to collect their stamp. Profiles stay here after tonight, so you can follow up later.
         </p>
-      </div>
+      </section>
 
-      <div className="flex gap-2">
-        {[
-          { key: 'all', label: 'Everyone' },
-          { key: 'saved', label: `My providers${savedIds.length ? ` (${savedIds.length})` : ''}` },
-        ].map((t) => (
-          <Button
+      <div className="mb-[30px] flex gap-[34px] border-b border-border">
+        {TABS.map((t) => (
+          <button
             key={t.key}
-            size="sm"
-            variant={tab === t.key ? 'default' : 'outline'}
+            type="button"
             onClick={() => setTab(t.key)}
+            className={cn(
+              "relative pb-[17px] text-sm transition-colors duration-200 after:absolute after:-bottom-px after:inset-x-0 after:h-0.5 after:origin-left after:scale-x-0 after:bg-accent after:content-[''] after:transition-transform after:[transition-duration:220ms] focus-visible:text-foreground focus-visible:after:scale-x-100 active:text-accent-strong",
+              tab === t.key
+                ? 'text-foreground after:scale-x-100'
+                : 'text-muted-foreground hover:text-foreground hover:after:scale-x-100'
+            )}
           >
-            {t.label}
-          </Button>
+            {t.key === 'saved' && savedIds.length ? `${t.label} (${savedIds.length})` : t.label}
+          </button>
         ))}
       </div>
 
       {categories.length > 1 && (
-        <div className="flex flex-wrap gap-2">
+        <div className="mb-8 flex flex-wrap gap-[11px]">
           {['all', ...categories].map((c) => (
             <button
               key={c}
               type="button"
               onClick={() => setCategory(c)}
               className={cn(
-                'rounded-full border px-3 py-1 text-xs capitalize',
-                category === c ? 'border-accent bg-accent text-accent-foreground' : 'border-border bg-card'
+                "relative rounded-full border px-[17px] py-[10px] text-xs tracking-[0.02em] transition-colors duration-200 after:absolute after:bottom-[3px] after:left-[15px] after:right-[15px] after:h-0.5 after:origin-left after:scale-x-0 after:bg-accent after:content-[''] after:transition-transform after:[transition-duration:220ms] focus-visible:text-foreground focus-visible:after:scale-x-100 active:text-accent-strong",
+                category === c
+                  ? 'border-accent bg-secondary text-foreground after:scale-x-100'
+                  : 'border-border bg-background text-muted-foreground hover:border-accent hover:text-foreground hover:after:scale-x-100'
               )}
             >
               {c === 'all' ? 'All categories' : c}
@@ -106,12 +117,12 @@ export default function Providers() {
       {loading ? (
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-border border-t-primary" />
       ) : (
-        <div className="space-y-2">
-          {providers.map((p) => (
-            <ProviderCard key={p.id} provider={p} showcase={showcaseFor(p.id)} />
+        <div className="border-t border-border">
+          {providers.map((p, i) => (
+            <ProviderCard key={p.id} provider={p} showcase={showcaseFor(p.id)} index={i} />
           ))}
           {!providers.length && (
-            <p className="rounded-lg border border-dashed border-border bg-card p-4 text-sm text-muted-foreground">
+            <p className="border-b border-border py-8 text-sm leading-[1.8] text-muted-foreground">
               {tab === 'saved' ? (
                 <>
                   <Star className="mr-2 inline h-4 w-4" /> Nothing saved yet. Open a provider and tap Save.

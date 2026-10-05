@@ -21,7 +21,7 @@ export default function Home() {
   if (!event) {
     return (
       <div className="rounded-lg border border-border bg-card p-6 text-center">
-        <Compass className="mx-auto h-8 w-8 text-accent" />
+        <Compass className="mx-auto h-8 w-8 text-accent-strong" />
         <p className="mt-3 font-heading text-xl">No crawl scheduled yet</p>
         <p className="mt-1 text-sm text-muted-foreground">
           Krystal adds the next event in the back office and it will show up here.
@@ -75,7 +75,7 @@ export default function Home() {
       {ticket && !checkedIn && (
         <section className="rounded-lg border border-border bg-card p-5">
           <p className="flex items-center gap-2 font-heading text-xl">
-            <CheckCircle2 className="h-5 w-5 text-accent" /> Ticket confirmed
+            <CheckCircle2 className="h-5 w-5 text-accent-strong" /> Ticket confirmed
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
             Scan the check-in sign at the entrance, or tap below if you&rsquo;re already there.
@@ -132,7 +132,7 @@ export default function Home() {
       {ticket && (
         <section className="rounded-lg border border-border bg-card p-5">
           <p className="flex items-center gap-2 font-heading text-xl">
-            <Gift className="h-5 w-5 text-accent" /> Your {money(event.donation_amount)} donation
+            <Gift className="h-5 w-5 text-accent-strong" /> Your {money(event.donation_amount)} donation
           </p>
           {pick ? (
             <p className="mt-2 text-sm text-muted-foreground">

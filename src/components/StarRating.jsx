@@ -16,7 +16,7 @@ export default function StarRating({ value = 0, onChange, size = 'h-6 w-6' }) {
           aria-label={`${n} star${n > 1 ? 's' : ''}`}
         >
           <Star
-            className={cn(size, n <= value ? 'fill-accent text-accent' : 'text-muted-foreground')}
+            className={cn(size, n <= value ? 'fill-accent-strong text-accent-strong' : 'text-muted-foreground')}
           />
         </button>
       ))}

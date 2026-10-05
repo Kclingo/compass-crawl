@@ -16,7 +16,7 @@ export default function ProviderAvatar({ provider, className = 'h-12 w-12 text-b
   return (
     <span
       className={cn(
-        'flex shrink-0 items-center justify-center rounded-full bg-primary font-heading tracking-widest text-secondary',
+        'flex shrink-0 items-center justify-center rounded-full border border-foreground bg-background font-heading tracking-widest text-foreground',
         className
       )}
     >

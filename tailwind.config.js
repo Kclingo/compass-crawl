@@ -37,6 +37,8 @@ module.exports = {
   				DEFAULT: 'hsl(var(--accent))',
   				foreground: 'hsl(var(--accent-foreground))'
   			},
+  			wash: 'hsl(var(--wash))',
+  			'accent-strong': 'hsl(var(--accent-strong))',
   			destructive: {
   				DEFAULT: 'hsl(var(--destructive))',
   				foreground: 'hsl(var(--destructive-foreground))'
@@ -84,11 +86,31 @@ module.exports = {
   				to: {
   					height: '0'
   				}
+  			},
+  			draw: {
+  				from: {
+  					transform: 'scaleX(0)'
+  				},
+  				to: {
+  					transform: 'scaleX(1)'
+  				}
+  			},
+  			rise: {
+  				from: {
+  					opacity: '0',
+  					transform: 'translateY(13px)'
+  				},
+  				to: {
+  					opacity: '1',
+  					transform: 'translateY(0)'
+  				}
   			}
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out'
+  			'accordion-up': 'accordion-up 0.2s ease-out',
+  			draw: 'draw 0.9s cubic-bezier(.2,.75,.3,1) both',
+  			rise: 'rise 0.55s ease both'
   		}
   	}
   },

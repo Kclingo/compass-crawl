@@ -92,8 +92,8 @@ export default function Feedback() {
 
   if (sent || receipt?.submitted) {
     return (
-      <div className="rounded-lg border border-accent/40 bg-card p-5 text-center">
-        <CheckCircle2 className="mx-auto h-8 w-8 text-accent" />
+      <div className="rounded-lg border border-accent bg-card p-5 text-center">
+        <CheckCircle2 className="mx-auto h-8 w-8 text-accent-strong" />
         <p className="mt-2 font-heading text-xl">Thank you</p>
         <p className="mt-1 text-sm text-muted-foreground">
           Your answers went in anonymously. Krystal reads every one of them.

@@ -38,7 +38,7 @@ export default function DonationReveal({ event }) {
   }, [event.id]);
 
   return (
-    <section className="rounded-lg border border-accent/40 bg-primary p-5 text-primary-foreground">
+    <section className="rounded-lg border border-accent bg-primary p-5 text-primary-foreground">
       <p className="font-heading text-xl uppercase tracking-[0.2em] text-secondary">Tonight we gave</p>
       <p className="mt-1 font-heading text-4xl text-secondary">{money(tonightTotal)}</p>
       <ul className="mt-3 space-y-1 text-sm">

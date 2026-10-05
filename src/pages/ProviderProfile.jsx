@@ -102,7 +102,7 @@ export default function ProviderProfile() {
       )}
 
       {showcase && (
-        <div className="rounded-lg border border-accent/40 bg-card p-4">
+        <div className="rounded-lg border border-accent bg-card p-4">
           <p className="text-xs uppercase tracking-widest text-muted-foreground">Tonight&rsquo;s showcase</p>
           <p className="mt-1 font-heading text-lg">{showcase.showcase_title}</p>
           <p className="text-sm text-muted-foreground">

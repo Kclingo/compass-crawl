@@ -84,8 +84,8 @@ export default function CheckIn() {
       )}
 
       {ticket && ticket.checked_in_at && (
-        <div className="rounded-lg border border-accent/40 bg-card p-5 text-center">
-          <CheckCircle2 className="mx-auto h-8 w-8 text-accent" />
+        <div className="rounded-lg border border-accent bg-card p-5 text-center">
+          <CheckCircle2 className="mx-auto h-8 w-8 text-accent-strong" />
           <p className="mt-2 font-heading text-xl">You&rsquo;re in, {ticket.attendee_name.split(' ')[0]}</p>
           <p className="mt-1 text-sm text-muted-foreground">
             Checked in at {new Date(ticket.checked_in_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}.
@@ -132,7 +132,7 @@ export default function CheckIn() {
                   <span className="block truncate text-xs text-muted-foreground">{row.email}</span>
                 </span>
                 {row.checked_in_at ? (
-                  <span className="text-xs text-accent">Arrived</span>
+                  <span className="text-xs text-accent-strong">Arrived</span>
                 ) : (
                   <Button size="sm" variant="outline" onClick={() => markGuest(row)}>
                     Mark arrived

@@ -75,7 +75,7 @@ export default function CharityPick() {
       <BackLink to="/" label="My passport" />
       {paid && (
         <p className="flex items-center gap-2 rounded-lg bg-secondary p-3 text-sm text-secondary-foreground">
-          <CheckCircle2 className="h-4 w-4 text-accent" /> Payment received. Now pick where your donation goes.
+          <CheckCircle2 className="h-4 w-4 text-accent-strong" /> Payment received. Now pick where your donation goes.
         </p>
       )}
       <div>
@@ -107,7 +107,7 @@ export default function CharityPick() {
                 <span className="block font-heading text-lg leading-tight">{charity.name}</span>
                 <span className="mt-0.5 block text-sm text-muted-foreground">{charity.description}</span>
               </span>
-              {selected && <Check className="mt-1 h-5 w-5 shrink-0 text-accent" />}
+              {selected && <Check className="mt-1 h-5 w-5 shrink-0 text-accent-strong" />}
             </button>
           );
         })}
