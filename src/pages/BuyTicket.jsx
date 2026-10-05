@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { CheckCircle2, Ticket as TicketIcon } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,7 @@ const SOURCES = ['Instagram', 'Friend or word of mouth', 'A provider', 'The venu
 const FIRST_CRAWL = ['Yes, my first', "No, I've been before", 'Prefer not to say'];
 
 export default function BuyTicket() {
+  const navigate = useNavigate();
   const { event, loading: eventLoading } = useCurrentEvent();
   const { ticket, loading: ticketLoading } = useMyTicket(event?.id);
   const [sold, setSold] = useState(null);
@@ -61,8 +62,9 @@ export default function BuyTicket() {
   const isSoldOut = sold >= (event.ticket_cap || 0);
   const tier = resolveTicketTier(event, earlyBirdSold);
   const discount = promo ? Math.round((tier.price * promo.percent_off) / 100) : 0;
-  const fee = event.pass_fees_to_buyer ? Number(event.fee_amount || 0) : 0;
-  const total = Math.max(tier.price - discount, 0) + fee;
+  const netPrice = Math.max(tier.price - discount, 0);
+  const fee = netPrice > 0 && event.pass_fees_to_buyer ? Number(event.fee_amount || 0) : 0;
+  const total = netPrice + fee;
 
   function applyPromo() {
     const match = (event.promo_codes || []).find(
@@ -84,9 +86,10 @@ export default function BuyTicket() {
     setError('');
 
     // Open the checkout tab in the same click, before awaiting, so popup blockers allow it.
+    const isFree = total <= 0;
     const isFramed = window.self !== window.top;
-    const checkoutTab = isFramed ? window.open('', '_blank') : null;
-    if (isFramed && !checkoutTab) {
+    const checkoutTab = isFramed && !isFree ? window.open('', '_blank') : null;
+    if (isFramed && !isFree && !checkoutTab) {
       setError('Allow popups to continue to checkout.');
       return;
     }
@@ -108,6 +111,10 @@ export default function BuyTicket() {
         ticketId = created.id;
       }
       const response = await base44.functions.invoke('createTicketCheckout', { ticket_id: ticketId });
+      if (response.data?.free) {
+        navigate('/charity');
+        return;
+      }
       const url = response.data?.url;
       if (!url) throw new Error(response.data?.error || 'Checkout could not be started.');
       if (checkoutTab) {
@@ -274,7 +281,7 @@ export default function BuyTicket() {
 
       <Button className="w-full" onClick={startCheckout} disabled={submitting}>
         <TicketIcon className="mr-2 h-4 w-4" />
-        {submitting ? 'Opening checkout…' : `Pay ${money(total)}`}
+        {total > 0 ? (submitting ? 'Opening checkout…' : `Pay ${money(total)}`) : 'Claim my free ticket'}
       </Button>
       <p className="text-center text-xs text-muted-foreground">
         Card, Apple Pay, and Google Pay. The app never handles your card details, and your donation stays whole.

@@ -33,6 +33,17 @@ export default async function (req) {
       (p) => p && p.code && ticket.promo_code && String(p.code).toLowerCase() === String(ticket.promo_code).toLowerCase()
     );
     if (promo) amount -= Math.round((amount * Number(promo.percent_off || 0)) / 100);
+
+    // A code that covers the whole ticket costs the guest nothing: issue it without a card.
+    if (amount <= 0) {
+      await base44.asServiceRole.entities.Ticket.update(ticket.id, {
+        amount_paid: 0,
+        payment_ref: 'free-' + crypto.randomUUID(),
+        payment_status: 'paid',
+      });
+      return Response.json({ free: true, ticket_id: ticket.id });
+    }
+
     if (event.pass_fees_to_buyer) amount += Number(event.fee_amount || 0);
 
     const unitAmount = Math.max(Math.round(amount * 100), 50);
