@@ -16,6 +16,7 @@ import Home from '@/pages/Home';
 import Schedule from '@/pages/Schedule';
 import Providers from '@/pages/Providers';
 import ProviderProfile from '@/pages/ProviderProfile';
+import ProviderProfileEdit from '@/pages/ProviderProfileEdit';
 import BuyTicket from '@/pages/BuyTicket';
 import CharityPick from '@/pages/CharityPick';
 import CheckIn from '@/pages/CheckIn';
@@ -59,6 +60,7 @@ const AuthenticatedApp = () => {
           <Route path="schedule" element={<Schedule />} />
           <Route path="providers" element={<Providers />} />
           <Route path="providers/:id" element={<ProviderProfile />} />
+          <Route path="provider/profile" element={<ProviderProfileEdit />} />
           <Route path="tickets/new" element={<BuyTicket />} />
           <Route path="charity" element={<CharityPick />} />
           <Route path="check-in" element={<CheckIn />} />

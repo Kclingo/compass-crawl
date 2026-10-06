@@ -1,4 +1,6 @@
 {
+  "name": "User",
+  "type": "object",
   "properties": {
     "role": {
       "type": "string",
@@ -7,11 +9,18 @@
         "admin",
         "user"
       ]
+    },
+    "account_type": {
+      "type": "string",
+      "description": "Chosen at sign-up: an attendee passport or a provider profile login",
+      "enum": [
+        "attendee",
+        "provider"
+      ],
+      "default": "attendee"
     }
   },
   "required": [
     "role"
-  ],
-  "name": "User",
-  "type": "object"
+  ]
 }

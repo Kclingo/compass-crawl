@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { CalendarDays, Compass, SlidersHorizontal, Users } from 'lucide-react';
+import { CalendarDays, Compass, SlidersHorizontal, UserCircle, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Mobile bottom bar keeps the three hubs of the journey.
@@ -11,6 +11,9 @@ export const PRIMARY_ITEMS = [
 ];
 
 export const BACK_OFFICE_ITEM = { to: '/admin', label: 'Back office', icon: SlidersHorizontal };
+
+// Provider logins edit their own profile from the same navigation.
+export const MY_PROFILE_ITEM = { to: '/provider/profile', label: 'My profile', icon: UserCircle };
 
 // Wider screens get every screen in the header, so nothing has to be hunted for.
 const DESKTOP_ITEMS = [
@@ -23,10 +26,12 @@ const DESKTOP_ITEMS = [
   { to: '/feedback', label: 'Feedback' },
 ];
 
-export default function AppNav({ isAdmin }) {
-  const items = isAdmin
-    ? [...DESKTOP_ITEMS, { to: BACK_OFFICE_ITEM.to, label: BACK_OFFICE_ITEM.label }]
-    : DESKTOP_ITEMS;
+export default function AppNav({ isAdmin, isProvider }) {
+  const items = [
+    ...DESKTOP_ITEMS,
+    ...(isProvider ? [{ to: MY_PROFILE_ITEM.to, label: MY_PROFILE_ITEM.label }] : []),
+    ...(isAdmin ? [{ to: BACK_OFFICE_ITEM.to, label: BACK_OFFICE_ITEM.label }] : []),
+  ];
 
   return (
     <nav aria-label="Main" className="hidden border-t border-border lg:block">

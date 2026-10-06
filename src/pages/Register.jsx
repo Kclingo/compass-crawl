@@ -10,6 +10,13 @@ import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
 import { toast } from "@/components/ui/use-toast";
 import { safeReturnTo } from "@/lib/authReturnTo";
+import { cn } from "@/lib/utils";
+import { clearPendingAccountType, rememberAccountType } from "@/lib/accountType";
+
+const ACCOUNT_TYPES = [
+  { value: "attendee", label: "Attendee", hint: "Buy a passport and collect stamps" },
+  { value: "provider", label: "Provider", hint: "Run your wellness profile" },
+];
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -19,6 +26,7 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [showOtp, setShowOtp] = useState(false);
   const [otpCode, setOtpCode] = useState("");
+  const [accountType, setAccountType] = useState("attendee");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,9 +37,11 @@ export default function Register() {
     }
     setLoading(true);
     try {
+      rememberAccountType(accountType);
       await base44.auth.register({ email, password });
       setShowOtp(true);
     } catch (err) {
+      clearPendingAccountType();
       setError(err.message || "Registration failed");
     } finally {
       setLoading(false);
@@ -68,6 +78,7 @@ export default function Register() {
   };
 
   const handleGoogle = () => {
+    rememberAccountType(accountType);
     base44.auth.loginWithProvider("google", safeReturnTo());
   };
 
@@ -142,6 +153,29 @@ export default function Register() {
         </>
       }
     >
+      <div className="mb-6 space-y-2">
+        <Label>Account type</Label>
+        <div className="grid grid-cols-2 gap-2">
+          {ACCOUNT_TYPES.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => setAccountType(option.value)}
+              aria-pressed={accountType === option.value}
+              className={cn(
+                "rounded-lg border px-3 py-3 text-left transition-colors duration-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+                accountType === option.value
+                  ? "border-foreground bg-primary text-primary-foreground"
+                  : "border-border bg-card text-muted-foreground hover:border-accent hover:text-foreground"
+              )}
+            >
+              <span className="block text-sm font-medium">{option.label}</span>
+              <span className="mt-0.5 block text-[11px] leading-snug opacity-75">{option.hint}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       <Button
         variant="outline"
         className="w-full h-12 text-sm font-medium mb-6"

@@ -4,11 +4,13 @@ import { Compass } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { cn } from '@/lib/utils';
 import ShowcaseAlert from '@/components/ShowcaseAlert';
-import AppNav, { BACK_OFFICE_ITEM, PRIMARY_ITEMS } from '@/components/AppNav';
+import AppNav, { BACK_OFFICE_ITEM, MY_PROFILE_ITEM, PRIMARY_ITEMS } from '@/components/AppNav';
+import useAccountType from '@/hooks/useAccountType';
 import ThemeToggle from '@/components/ThemeToggle';
 
 export default function AppLayout() {
   const [isAdmin, setIsAdmin] = useState(false);
+  const accountType = useAccountType();
 
   useEffect(() => {
     let active = true;
@@ -23,7 +25,12 @@ export default function AppLayout() {
     };
   }, []);
 
-  const items = isAdmin ? [...PRIMARY_ITEMS, BACK_OFFICE_ITEM] : PRIMARY_ITEMS;
+  const isProvider = accountType === 'provider';
+  const items = [
+    ...PRIMARY_ITEMS,
+    ...(isProvider ? [MY_PROFILE_ITEM] : []),
+    ...(isAdmin ? [BACK_OFFICE_ITEM] : []),
+  ];
 
   return (
     <div className="min-h-screen bg-background pb-24 lg:pb-12">
@@ -36,7 +43,7 @@ export default function AppLayout() {
             </Link>
             <ThemeToggle />
           </div>
-          <AppNav isAdmin={isAdmin} />
+          <AppNav isAdmin={isAdmin} isProvider={isProvider} />
         </div>
       </header>
 
