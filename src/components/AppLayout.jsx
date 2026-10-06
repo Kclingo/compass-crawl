@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { cn } from '@/lib/utils';
 import ShowcaseAlert from '@/components/ShowcaseAlert';
 import AppNav, { BACK_OFFICE_ITEM, PRIMARY_ITEMS } from '@/components/AppNav';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export default function AppLayout() {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -33,6 +34,7 @@ export default function AppLayout() {
             <Link to="/" className="font-heading text-[23px] uppercase tracking-[0.25em] text-foreground">
               Compass Crawl
             </Link>
+            <ThemeToggle />
           </div>
           <AppNav isAdmin={isAdmin} />
         </div>
