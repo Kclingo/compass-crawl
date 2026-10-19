@@ -40,8 +40,8 @@ export default function ProviderProfileEdit() {
           My provider profile
         </h1>
         <p className="mt-2 text-sm leading-[1.8] text-muted-foreground">
-          This is what crawl guests see when they open your page. Showcase times, table numbers and stamp
-          codes are set by the Compass Crawl team.
+          This is what crawl guests see when they open your page. Showcase times and table numbers are set by
+          the Compass Crawl team.
         </p>
       </header>
 

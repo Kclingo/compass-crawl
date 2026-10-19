@@ -8,6 +8,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AppLayout from '@/components/AppLayout';
+import AdminRoute from '@/components/AdminRoute';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
@@ -17,10 +18,12 @@ import Schedule from '@/pages/Schedule';
 import Providers from '@/pages/Providers';
 import ProviderProfile from '@/pages/ProviderProfile';
 import ProviderProfileEdit from '@/pages/ProviderProfileEdit';
-import BuyTicket from '@/pages/BuyTicket';
+import GetPass from '@/pages/GetPass';
+import Pass from '@/pages/Pass';
 import CharityPick from '@/pages/CharityPick';
+import Gift from '@/pages/Gift';
+import Me from '@/pages/Me';
 import CheckIn from '@/pages/CheckIn';
-import Stamp from '@/pages/Stamp';
 import Feedback from '@/pages/Feedback';
 import Admin from '@/pages/Admin';
 
@@ -61,12 +64,16 @@ const AuthenticatedApp = () => {
           <Route path="providers" element={<Providers />} />
           <Route path="providers/:id" element={<ProviderProfile />} />
           <Route path="provider/profile" element={<ProviderProfileEdit />} />
-          <Route path="tickets/new" element={<BuyTicket />} />
-          <Route path="charity" element={<CharityPick />} />
+          <Route path="pass/new" element={<GetPass />} />
+          <Route path="pass" element={<Pass />} />
+          <Route path="cause" element={<CharityPick />} />
+          <Route path="gift" element={<Gift />} />
+          <Route path="me" element={<Me />} />
           <Route path="check-in" element={<CheckIn />} />
-          <Route path="stamp" element={<Stamp />} />
           <Route path="feedback" element={<Feedback />} />
-          <Route path="admin" element={<Admin />} />
+          <Route element={<AdminRoute />}>
+            <Route path="admin" element={<Admin />} />
+          </Route>
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

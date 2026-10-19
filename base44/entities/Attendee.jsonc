@@ -1,0 +1,120 @@
+{
+  "name": "Attendee",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "The guest account that owns this pass, set when the pass is claimed"
+    },
+    "full_name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "mobile": {
+      "type": "string"
+    },
+    "eighteen_confirmed": {
+      "type": "boolean",
+      "default": false
+    },
+    "text_opt_in": {
+      "type": "boolean",
+      "default": false
+    },
+    "text_opt_in_at": {
+      "type": "string",
+      "description": "Stamped when the guest opts in to texts"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "waitlist",
+        "cancelled"
+      ],
+      "default": "active"
+    },
+    "checked_in_at": {
+      "type": "string"
+    },
+    "remind_all": {
+      "type": "boolean",
+      "default": false
+    },
+    "gift_status": {
+      "type": "string",
+      "enum": [
+        "none",
+        "paid"
+      ],
+      "default": "none"
+    },
+    "gift_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "gift_ref": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_id",
+    "full_name",
+    "email"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

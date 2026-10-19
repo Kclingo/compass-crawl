@@ -6,17 +6,20 @@ import { Input } from '@/components/ui/input';
 import { money } from '@/lib/compass';
 
 const HEADERS = [
-  'attendee_name',
+  'full_name',
   'email',
-  'phone',
-  'price_tier',
-  'amount_paid',
+  'mobile',
+  'status',
   'checked_in_at',
+  'text_opt_in',
+  'text_opt_in_at',
+  'gift_status',
+  'gift_amount',
+  'cause',
   'age_range',
   'zip_code',
   'referral_source',
   'first_crawl',
-  'text_opt_in',
 ];
 
 function Stat({ label, value }) {
@@ -28,79 +31,137 @@ function Stat({ label, value }) {
   );
 }
 
+function GroupList({ title, rows, keyField }) {
+  return (
+    <div className="rounded-lg border border-border bg-card p-3">
+      <p className="text-[11px] uppercase tracking-widest text-muted-foreground">{title}</p>
+      <ul className="mt-2 space-y-1 text-xs">
+        {rows.map((row) => (
+          <li key={row[keyField] || 'none'} className="flex justify-between gap-2">
+            <span>{row[keyField] || 'Not given'}</span>
+            <span className="text-muted-foreground">{row.count}</span>
+          </li>
+        ))}
+        {!rows.length && <li className="text-muted-foreground">No answers yet.</li>}
+      </ul>
+    </div>
+  );
+}
+
 export default function AdminAttendeesTab({ event }) {
   const [stats, setStats] = useState(null);
-  const [tickets, setTickets] = useState([]);
+  const [causes, setCauses] = useState([]);
   const [ages, setAges] = useState([]);
   const [sources, setSources] = useState([]);
+  const [guests, setGuests] = useState([]);
   const [search, setSearch] = useState('');
 
   const load = useCallback(async () => {
-    const [sold, arrived, revenue, donations, ageRows, sourceRows] = await Promise.all([
-      base44.entities.Ticket.count({ event_id: event.id, status: 'active' }),
-      base44.entities.Ticket.count({ event_id: event.id, status: 'active', checked_in_at: { $exists: true } }),
-      base44.entities.Ticket.aggregate({ query: { event_id: event.id, status: 'active' }, sum: 'amount_paid' }),
-      base44.entities.CharityPick.aggregate({ query: { event_id: event.id }, sum: 'amount' }),
-      base44.entities.Ticket.aggregate({ query: { event_id: event.id, status: 'active' }, groupBy: 'age_range' }),
-      base44.entities.Ticket.aggregate({ query: { event_id: event.id, status: 'active' }, groupBy: 'referral_source' }),
+    const [active, waitlist, arrived, gifts, causeRows, charityPage, ageRows, sourceRows] = await Promise.all([
+      base44.entities.Attendee.count({ event_id: event.id, status: 'active' }),
+      base44.entities.Attendee.count({ event_id: event.id, status: 'waitlist' }),
+      base44.entities.Attendee.count({ event_id: event.id, status: 'active', checked_in_at: { $exists: true } }),
+      base44.entities.Attendee.aggregate({
+        query: { event_id: event.id, gift_status: 'paid' },
+        sum: 'gift_amount',
+      }),
+      base44.entities.CharityPick.aggregate({ query: { event_id: event.id }, groupBy: 'charity_id', sum: 'amount' }),
+      base44.entities.Charity.list({ sort: 'sort_order', limit: 20 }),
+      base44.entities.Demographic.aggregate({ query: { event_id: event.id }, groupBy: 'age_range' }),
+      base44.entities.Demographic.aggregate({ query: { event_id: event.id }, groupBy: 'referral_source' }),
     ]);
-    setStats({
-      sold,
-      arrived,
-      revenue: revenue.rows?.[0]?.sum_amount_paid || 0,
-      donations: donations.rows?.[0]?.sum_amount || 0,
+
+    const names = {};
+    charityPage.items.forEach((c) => {
+      names[c.id] = c.name;
     });
+    setCauses(
+      (causeRows.rows || []).map((row) => ({
+        charity_id: row.charity_id,
+        name: names[row.charity_id] || 'Cause',
+        count: row.count,
+        total: row.sum_amount || 0,
+      }))
+    );
     setAges(ageRows.rows || []);
     setSources(sourceRows.rows || []);
-    const page = await base44.entities.Ticket.filter(
-      { event_id: event.id, status: 'active' },
-      { sort: '-created_date', limit: 100 }
-    );
-    setTickets(page.items);
-  }, [event.id]);
+    setStats({
+      active,
+      waitlist,
+      arrived,
+      gifts: gifts.rows?.[0]?.sum_gift_amount || 0,
+      capacity: Number(event.capacity || 40),
+    });
+    await loadGuests();
+  }, [event.id, event.capacity]);
+
+  const loadGuests = useCallback(
+    async (term) => {
+      const query = term
+        ? { event_id: event.id, full_name: { $regex: term, $options: 'i' } }
+        : { event_id: event.id };
+      const page = await base44.entities.Attendee.filter(query, { sort: '-created_date', limit: 100 });
+      setGuests(page.items);
+    },
+    [event.id]
+  );
 
   useEffect(() => {
     load();
   }, [load]);
 
-  async function runSearch() {
-    if (!search.trim()) {
-      load();
-      return;
-    }
-    const page = await base44.entities.Ticket.filter(
-      { event_id: event.id, attendee_name: { $regex: search.trim(), $options: 'i' } },
-      { limit: 50 }
-    );
-    setTickets(page.items);
-  }
-
   async function toggleCheckIn(row) {
-    await base44.entities.Ticket.update(row.id, {
+    await base44.entities.Attendee.update(row.id, {
       checked_in_at: row.checked_in_at ? '' : new Date().toISOString(),
     });
     load();
   }
 
   async function exportCsv() {
-    const rows = [];
+    const guests = [];
     let cursor;
     let hasMore = true;
     while (hasMore) {
-      const page = await base44.entities.Ticket.filter(
-        { event_id: event.id, status: 'active' },
+      const page = await base44.entities.Attendee.filter(
+        { event_id: event.id },
         { sort: '-created_date', limit: 200, cursor }
       );
-      rows.push(...page.items);
+      guests.push(...page.items);
       cursor = page.next_cursor;
       hasMore = page.has_more;
     }
+
+    const picks = {};
+    (await base44.entities.CharityPick.filter({ event_id: event.id }, { limit: 500 })).items.forEach((p) => {
+      picks[p.attendee_id] = p.charity_id;
+    });
+    const charityPage = await base44.entities.Charity.list({ sort: 'sort_order', limit: 20 });
+    const names = {};
+    charityPage.items.forEach((c) => {
+      names[c.id] = c.name;
+    });
+
+    const demographics = {};
+    (await base44.entities.Demographic.filter({ event_id: event.id }, { limit: 500 })).items.forEach((d) => {
+      demographics[d.attendee_id] = d;
+    });
+
     const csv = [
       HEADERS.join(','),
-      ...rows.map((r) =>
-        HEADERS.map((h) => `"${String(r[h] ?? '').replace(/"/g, '""')}"`).join(',')
-      ),
+      ...guests.map((guest) => {
+        const demo = demographics[guest.id] || {};
+        const row = {
+          ...guest,
+          cause: names[picks[guest.id]] || '',
+          age_range: demo.age_range || '',
+          zip_code: demo.zip_code || '',
+          referral_source: demo.referral_source || '',
+          first_crawl: demo.first_crawl || '',
+        };
+        return HEADERS.map((h) => `"${String(row[h] ?? '').replace(/"/g, '""')}"`).join(',');
+      }),
     ].join('\n');
+
     const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
     const link = document.createElement('a');
     link.href = url;
@@ -112,35 +173,30 @@ export default function AdminAttendeesTab({ event }) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-3">
-        <Stat label="Tickets" value={stats ? `${stats.sold} / ${event.ticket_cap}` : '—'} />
+        <Stat label="Passes" value={stats ? `${stats.active} / ${stats.capacity}` : '—'} />
         <Stat label="Checked in" value={stats?.arrived ?? '—'} />
-        <Stat label="Ticket revenue" value={stats ? money(stats.revenue) : '—'} />
-        <Stat label="Donations raised" value={stats ? money(stats.donations) : '—'} />
+        <Stat label="On the waitlist" value={stats?.waitlist ?? '—'} />
+        <Stat label="Gifts raised" value={stats ? money(stats.gifts) : '—'} />
+      </div>
+
+      <div className="rounded-lg border border-border bg-card p-3">
+        <p className="text-[11px] uppercase tracking-widest text-muted-foreground">Cause totals</p>
+        <ul className="mt-2 space-y-1 text-xs">
+          {causes.map((row) => (
+            <li key={row.charity_id} className="flex justify-between gap-2">
+              <span>{row.name}</span>
+              <span className="text-muted-foreground">
+                {row.count} pick{row.count === 1 ? '' : 's'} · {money(row.total)}
+              </span>
+            </li>
+          ))}
+          {!causes.length && <li className="text-muted-foreground">No causes picked yet.</li>}
+        </ul>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-lg border border-border bg-card p-3">
-          <p className="text-[11px] uppercase tracking-widest text-muted-foreground">Age range</p>
-          <ul className="mt-2 space-y-1 text-xs">
-            {ages.map((row) => (
-              <li key={row.age_range || 'none'} className="flex justify-between gap-2">
-                <span>{row.age_range || 'Not given'}</span>
-                <span className="text-muted-foreground">{row.count}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="rounded-lg border border-border bg-card p-3">
-          <p className="text-[11px] uppercase tracking-widest text-muted-foreground">Heard about us</p>
-          <ul className="mt-2 space-y-1 text-xs">
-            {sources.map((row) => (
-              <li key={row.referral_source || 'none'} className="flex justify-between gap-2">
-                <span>{row.referral_source || 'Not given'}</span>
-                <span className="text-muted-foreground">{row.count}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <GroupList title="Age range" rows={ages} keyField="age_range" />
+        <GroupList title="Heard about us" rows={sources} keyField="referral_source" />
       </div>
 
       <div className="flex gap-2">
@@ -148,9 +204,9 @@ export default function AdminAttendeesTab({ event }) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search a guest"
-          onKeyDown={(e) => e.key === 'Enter' && runSearch()}
+          onKeyDown={(e) => e.key === 'Enter' && loadGuests(search.trim())}
         />
-        <Button variant="outline" onClick={runSearch}>
+        <Button variant="outline" onClick={() => loadGuests(search.trim())}>
           <Search className="h-4 w-4" />
         </Button>
         <Button variant="outline" onClick={exportCsv}>
@@ -159,20 +215,25 @@ export default function AdminAttendeesTab({ event }) {
       </div>
 
       <ul className="space-y-2">
-        {tickets.map((row) => (
+        {guests.map((row) => (
           <li key={row.id} className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card p-3">
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm">{row.attendee_name}</p>
+              <p className="truncate text-sm">{row.full_name}</p>
               <p className="truncate text-xs text-muted-foreground">
-                {row.email} · {row.price_tier} · {money(row.amount_paid)}
+                {row.email} · {row.status === 'waitlist' ? 'waitlist' : row.text_opt_in ? 'texts on' : 'texts off'}
+                {row.gift_status === 'paid' ? ` · gifted ${money(row.gift_amount)}` : ''}
               </p>
             </div>
-            <Button size="sm" variant={row.checked_in_at ? 'secondary' : 'outline'} onClick={() => toggleCheckIn(row)}>
+            <Button
+              size="sm"
+              variant={row.checked_in_at ? 'secondary' : 'outline'}
+              onClick={() => toggleCheckIn(row)}
+            >
               {row.checked_in_at ? 'Arrived' : 'Mark arrived'}
             </Button>
           </li>
         ))}
-        {!tickets.length && <li className="text-sm text-muted-foreground">No guests yet.</li>}
+        {!guests.length && <li className="text-sm text-muted-foreground">No guests yet.</li>}
       </ul>
     </div>
   );

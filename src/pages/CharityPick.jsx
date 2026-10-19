@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Check, CheckCircle2 } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Check } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import useCurrentEvent from '@/hooks/useCurrentEvent';
+import useMyPass from '@/hooks/useMyPass';
 import BackLink from '@/components/BackLink';
-import useMyTicket from '@/hooks/useMyTicket';
-import { money } from '@/lib/compass';
+import { isCheckInClosed } from '@/lib/compass';
 import { cn } from '@/lib/utils';
 
 export default function CharityPick() {
-  const { event, loading: eventLoading } = useCurrentEvent();
-  const { ticket, pick, loading: ticketLoading, reload } = useMyTicket(event?.id);
+  const navigate = useNavigate();
+  const { event, loading } = useCurrentEvent();
+  const { attendee, pick, loading: passLoading, reload } = useMyPass(event?.id);
   const [charities, setCharities] = useState([]);
   const [saving, setSaving] = useState(false);
-  const [paid, setPaid] = useState(false);
 
   useEffect(() => {
     base44.entities.Charity.filter({ active: true }, { sort: 'sort_order', limit: 20 }).then((page) =>
@@ -22,67 +22,54 @@ export default function CharityPick() {
     );
   }, []);
 
-  useEffect(() => {
-    const sessionId = new URLSearchParams(window.location.search).get('session_id');
-    if (!sessionId || !event?.id) return;
-    base44.functions
-      .invoke('confirmTicketPayment', { session_id: sessionId })
-      .then((response) => {
-        if (response.data?.status === 'paid') setPaid(true);
-        return reload();
-      })
-      .finally(() => window.history.replaceState({}, '', '/charity'));
-  }, [event?.id, reload]);
-
-  if (eventLoading || ticketLoading) {
+  if (loading || passLoading) {
     return <div className="h-8 w-8 animate-spin rounded-full border-4 border-border border-t-primary" />;
   }
+  if (!event) return <p className="text-sm text-muted-foreground">The next Crawl is being planned.</p>;
 
-  if (!ticket) {
+  if (!attendee) {
     return (
       <div className="rounded-lg border border-border bg-card p-5 text-center">
-        <p className="font-heading text-xl">Grab your ticket first</p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Your donation pick comes right after you get your ticket.
-        </p>
+        <p className="font-heading text-xl">Claim your pass first</p>
+        <p className="mt-1 text-sm text-muted-foreground">Your cause comes right after your pass.</p>
         <Button asChild className="mt-4">
-          <Link to="/tickets/new">Get your ticket</Link>
+          <Link to="/pass/new">Claim my free pass</Link>
         </Button>
       </div>
     );
   }
 
-  const locked = Boolean(ticket.checked_in_at);
+  const locked = isCheckInClosed(event) || attendee.status === 'waitlist';
 
   async function choose(charity) {
     setSaving(true);
     if (pick) {
-      await base44.entities.CharityPick.update(pick.id, { charity_id: charity.id });
+      await base44.entities.CharityPick.update(pick.id, {
+        charity_id: charity.id,
+        amount: attendee.gift_status === 'paid' ? attendee.gift_amount : pick.amount || 0,
+      });
     } else {
       await base44.entities.CharityPick.create({
         event_id: event.id,
-        ticket_id: ticket.id,
+        attendee_id: attendee.id,
+        user_id: attendee.user_id || '',
         charity_id: charity.id,
-        amount: event.donation_amount ?? 5,
+        amount: attendee.gift_status === 'paid' ? attendee.gift_amount : 0,
       });
     }
     await reload();
     setSaving(false);
+    if (!pick) navigate('/gift');
   }
 
   return (
     <div className="space-y-5">
-      <BackLink to="/" label="My passport" />
-      {paid && (
-        <p className="flex items-center gap-2 rounded-lg bg-secondary p-3 text-sm text-secondary-foreground">
-          <CheckCircle2 className="h-4 w-4 text-accent-strong" /> Payment received. Now pick where your donation goes.
-        </p>
-      )}
+      <BackLink to="/" label="Tonight" />
       <div>
-        <h1 className="font-heading text-3xl uppercase tracking-[0.15em]">Where should it go?</h1>
+        <h1 className="font-heading text-3xl uppercase tracking-[0.14em]">Pick your cause</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Your {money(event?.donation_amount)} goes to one of tonight&rsquo;s nonprofits.
-          {locked ? ' Check-in has closed your pick.' : ' You can change this until check-in closes.'}
+          Pick exactly one of this month&rsquo;s four causes.
+          {locked ? ' Check-in has closed, so this is locked.' : ' You can change it until check-in closes.'}
         </p>
       </div>
 
@@ -111,10 +98,15 @@ export default function CharityPick() {
             </button>
           );
         })}
+        {!charities.length && (
+          <p className="rounded-lg border border-dashed border-border bg-card p-4 text-sm text-muted-foreground">
+            This month&rsquo;s causes are posted before the night.
+          </p>
+        )}
       </div>
 
       <Button asChild className="w-full" variant={pick ? 'default' : 'outline'}>
-        <Link to="/">{pick ? 'Go to my passport' : 'I’ll pick later'}</Link>
+        <Link to={pick ? '/pass' : '/gift'}>{pick ? 'Back to my pass' : 'Skip the gift for now'}</Link>
       </Button>
     </div>
   );

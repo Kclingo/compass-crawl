@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Copy, Plus, Save, Sparkles, Trash2 } from 'lucide-react';
+import { Clock, Copy, Plus, Save, Sparkles, Trash2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,7 +40,6 @@ export default function AdminTonightTab({ event }) {
       showcase_description: row.showcase_description,
       showcase_time: row.showcase_time,
       showcase_order: Number(row.showcase_order) || 0,
-      stamp_code: row.stamp_code,
       is_active: row.is_active !== false,
     });
     load();
@@ -53,7 +52,6 @@ export default function AdminTonightTab({ event }) {
       provider_id: addId,
       table_number: String(rows.length + 1),
       showcase_order: rows.length + 1,
-      stamp_code: String(Math.floor(1000 + Math.random() * 9000)),
       is_active: true,
     });
     setAddId('');
@@ -87,6 +85,32 @@ export default function AdminTonightTab({ event }) {
     setTimeout(() => setCopied(''), 1500);
   }
 
+  async function shiftRunningBehind() {
+    const now = Date.now();
+    const ordered = [...rows].sort((a, b) => (Number(a.showcase_order) || 0) - (Number(b.showcase_order) || 0));
+    const updates = [];
+    const shifted = [];
+    ordered.forEach((row) => {
+      const at = combineDateTime(event.date, row.showcase_time);
+      if (!at || at.getTime() <= now) return;
+      const moved = new Date(at.getTime() + 10 * 60000);
+      updates.push({
+        id: row.id,
+        showcase_time: `${String(moved.getHours()).padStart(2, '0')}:${String(moved.getMinutes()).padStart(2, '0')}`,
+      });
+      shifted.push({ event_provider_id: row.id, remind_at: new Date(moved.getTime() - 5 * 60000).toISOString() });
+    });
+    if (!updates.length) return;
+    await base44.entities.EventProvider.bulkUpdate(updates);
+    for (const row of shifted) {
+      await base44.entities.Reminder.updateMany(
+        { event_id: event.id, event_provider_id: row.event_provider_id, status: 'pending' },
+        { $set: { remind_at: row.remind_at } }
+      );
+    }
+    load();
+  }
+
   const checkInUrl = `${ORIGIN}/check-in?event=${event.id}`;
 
   return (
@@ -99,9 +123,14 @@ export default function AdminTonightTab({ event }) {
               {event.slot_length_minutes} min per showcase, {event.showcases_at_a_time} at a time.
             </p>
           </div>
-          <Button size="sm" variant="outline" onClick={buildTimes}>
-            <Sparkles className="mr-1 h-4 w-4" /> Build times
-          </Button>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={buildTimes}>
+              <Sparkles className="mr-1 h-4 w-4" /> Build times
+            </Button>
+            <Button size="sm" variant="outline" onClick={shiftRunningBehind}>
+              <Clock className="mr-1 h-4 w-4" /> Running behind +10
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -113,7 +142,7 @@ export default function AdminTonightTab({ event }) {
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <Input
               value={row.table_number}
               onChange={(e) => edit(row.id, 'table_number', e.target.value)}
@@ -123,11 +152,6 @@ export default function AdminTonightTab({ event }) {
               value={row.showcase_time}
               onChange={(e) => edit(row.id, 'showcase_time', e.target.value)}
               placeholder="18:10"
-            />
-            <Input
-              value={row.stamp_code}
-              onChange={(e) => edit(row.id, 'stamp_code', e.target.value.replace(/\D/g, '').slice(0, 4))}
-              placeholder="Code"
             />
           </div>
           <Input
@@ -140,18 +164,9 @@ export default function AdminTonightTab({ event }) {
             onChange={(e) => edit(row.id, 'showcase_description', e.target.value)}
             placeholder="One-line description"
           />
-          <div className="flex gap-2">
-            <Button size="sm" onClick={() => saveRow(row)}>
-              <Save className="mr-1 h-4 w-4" /> Save
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => copy(`${ORIGIN}/stamp?t=${row.id}`, row.id)}
-            >
-              <Copy className="mr-1 h-4 w-4" /> {copied === row.id ? 'Copied' : 'Table link'}
-            </Button>
-          </div>
+          <Button size="sm" onClick={() => saveRow(row)}>
+            <Save className="mr-1 h-4 w-4" /> Save
+          </Button>
         </div>
       ))}
 

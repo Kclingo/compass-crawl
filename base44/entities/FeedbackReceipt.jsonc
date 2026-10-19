@@ -5,7 +5,10 @@
     "event_id": {
       "type": "string"
     },
-    "ticket_id": {
+    "attendee_id": {
+      "type": "string"
+    },
+    "user_id": {
       "type": "string"
     },
     "submitted": {
@@ -18,6 +21,42 @@
   },
   "required": [
     "event_id",
-    "ticket_id"
-  ]
+    "attendee_id"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
 }

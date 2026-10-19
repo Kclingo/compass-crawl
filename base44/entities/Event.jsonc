@@ -5,12 +5,23 @@
     "title": {
       "type": "string"
     },
+    "awareness_theme": {
+      "type": "string",
+      "description": "The theme line for this crawl, e.g. Grateful & Grounded"
+    },
+    "host": {
+      "type": "string"
+    },
     "date": {
       "type": "string",
       "format": "date"
     },
-    "start_time": {
+    "venue": {
       "type": "string"
+    },
+    "start_time": {
+      "type": "string",
+      "description": "Doors open, 24h HH:MM"
     },
     "welcome_time": {
       "type": "string"
@@ -19,12 +30,6 @@
       "type": "string"
     },
     "end_time": {
-      "type": "string"
-    },
-    "venue": {
-      "type": "string"
-    },
-    "awareness_theme": {
       "type": "string"
     },
     "description": {
@@ -39,33 +44,25 @@
       ],
       "default": "draft"
     },
-    "donation_amount": {
-      "type": "number",
-      "default": 5
-    },
-    "general_price": {
-      "type": "number",
-      "default": 20
-    },
-    "early_bird_price": {
-      "type": "number",
-      "default": 15
-    },
-    "early_bird_limit": {
-      "type": "number",
-      "default": 15
-    },
-    "early_bird_ends": {
-      "type": "string",
-      "format": "date"
-    },
-    "ceiling_price": {
-      "type": "number",
-      "default": 25
-    },
-    "ticket_cap": {
+    "capacity": {
       "type": "number",
       "default": 40
+    },
+    "waitlist_message": {
+      "type": "string",
+      "default": "This Crawl is full. Join the list for next month."
+    },
+    "check_in_open": {
+      "type": "boolean",
+      "default": true
+    },
+    "check_in_closes_at": {
+      "type": "string",
+      "description": "Time check-in (and cause changes) close, 24h HH:MM"
+    },
+    "feedback_opens_at": {
+      "type": "string",
+      "description": "Time anonymous feedback opens, 24h HH:MM"
     },
     "slot_length_minutes": {
       "type": "number",
@@ -75,32 +72,17 @@
       "type": "number",
       "default": 1
     },
-    "pass_fees_to_buyer": {
-      "type": "boolean",
-      "default": true
-    },
-    "fee_amount": {
+    "gift_suggested_amount": {
       "type": "number",
-      "default": 0
+      "default": 5
     },
-    "check_in_open": {
-      "type": "boolean",
-      "default": true
-    },
-    "feedback_open": {
-      "type": "boolean",
-      "default": false
-    },
-    "promo_codes": {
+    "run_of_show": {
       "type": "array",
       "items": {
         "type": "object",
         "properties": {
-          "code": {
+          "time": {
             "type": "string"
-          },
-          "percent_off": {
-            "type": "number"
           },
           "label": {
             "type": "string"
@@ -112,5 +94,23 @@
   "required": [
     "title",
     "date"
-  ]
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

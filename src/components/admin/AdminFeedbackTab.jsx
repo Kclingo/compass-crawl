@@ -14,7 +14,7 @@ export default function AdminFeedbackTab({ event }) {
       base44.entities.Feedback.count({ event_id: event.id }),
       base44.entities.Feedback.aggregate({ query: { event_id: event.id }, avg: 'overall_rating' }),
       base44.entities.FeedbackReceipt.count({ event_id: event.id, submitted: true }),
-      base44.entities.Ticket.count({ event_id: event.id, status: 'active' }),
+      base44.entities.Attendee.count({ event_id: event.id, status: 'active' }),
     ]);
     setCount(total);
     setAverage(avg.rows?.[0]?.avg_overall_rating ?? null);
@@ -60,23 +60,15 @@ export default function AdminFeedbackTab({ event }) {
             <li key={row.id} className="rounded-lg border border-border bg-card p-4">
               <div className="flex items-center justify-between">
                 <StarRating size="h-4 w-4" value={row.overall_rating || 0} />
-                <span className="text-xs text-muted-foreground">{row.would_return}</span>
+                <span className="text-xs capitalize text-muted-foreground">
+                  Would return: {row.would_return}
+                </span>
               </div>
-              {row.provider_ratings?.filter((p) => p.rating > 0).length > 0 && (
-                <ul className="mt-2 space-y-0.5">
-                  {row.provider_ratings
-                    .filter((p) => p.rating > 0)
-                    .map((p) => (
-                      <li key={p.provider_id} className="flex justify-between text-xs text-muted-foreground">
-                        <span>{p.provider_name}</span>
-                        <span>{p.rating}/5</span>
-                      </li>
-                    ))}
-                </ul>
+              {row.favorite_stop && (
+                <p className="mt-2 text-xs text-muted-foreground">Favourite stop: {row.favorite_stop}</p>
               )}
-              {row.highlights && <p className="mt-2 text-sm">{row.highlights}</p>}
-              {row.improvements && (
-                <p className="mt-2 text-sm text-muted-foreground">Do differently: {row.improvements}</p>
+              {row.improvement && (
+                <p className="mt-2 text-sm text-muted-foreground">Do differently: {row.improvement}</p>
               )}
             </li>
           ))}

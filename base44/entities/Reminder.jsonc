@@ -5,7 +5,10 @@
     "event_id": {
       "type": "string"
     },
-    "ticket_id": {
+    "attendee_id": {
+      "type": "string"
+    },
+    "user_id": {
       "type": "string"
     },
     "event_provider_id": {
@@ -18,8 +21,7 @@
       "type": "string",
       "enum": [
         "in_app",
-        "sms",
-        "push"
+        "sms"
       ],
       "default": "in_app"
     },
@@ -35,7 +37,48 @@
   },
   "required": [
     "event_id",
-    "ticket_id",
+    "attendee_id",
     "event_provider_id"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
 }

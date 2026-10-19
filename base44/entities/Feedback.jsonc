@@ -8,37 +8,46 @@
     "overall_rating": {
       "type": "number"
     },
-    "provider_ratings": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "provider_id": {
-            "type": "string"
-          },
-          "provider_name": {
-            "type": "string"
-          },
-          "rating": {
-            "type": "number"
-          }
-        }
-      }
+    "favorite_stop": {
+      "type": "string",
+      "description": "The stop or showcase the guest liked most"
     },
-    "highlights": {
-      "type": "string"
-    },
-    "improvements": {
-      "type": "string"
+    "improvement": {
+      "type": "string",
+      "description": "One thing to change"
     },
     "would_return": {
-      "type": "string"
-    },
-    "transcript": {
-      "type": "string"
+      "type": "string",
+      "enum": [
+        "yes",
+        "maybe",
+        "no"
+      ]
     }
   },
   "required": [
     "event_id"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

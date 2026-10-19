@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 import { clearPendingAccountType, rememberAccountType } from "@/lib/accountType";
 
 const ACCOUNT_TYPES = [
-  { value: "attendee", label: "Attendee", hint: "Buy a passport and collect stamps" },
+  { value: "attendee", label: "Attendee",         hint: "Join a Crawl, pick a cause, gift if you like" },
   { value: "provider", label: "Provider", hint: "Run your wellness profile" },
 ];
 

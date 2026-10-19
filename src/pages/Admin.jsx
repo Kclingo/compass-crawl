@@ -9,14 +9,12 @@ import AdminCharitiesTab from '@/components/admin/AdminCharitiesTab';
 import AdminProvidersTab from '@/components/admin/AdminProvidersTab';
 import AdminTonightTab from '@/components/admin/AdminTonightTab';
 import AdminAttendeesTab from '@/components/admin/AdminAttendeesTab';
-import AdminRaffleTab from '@/components/admin/AdminRaffleTab';
 import AdminFeedbackTab from '@/components/admin/AdminFeedbackTab';
 
 const TABS = [
   { key: 'tonight', label: 'Tonight' },
   { key: 'providers', label: 'Providers' },
   { key: 'attendees', label: 'Guests' },
-  { key: 'raffle', label: 'Raffle' },
   { key: 'feedback', label: 'Feedback' },
   { key: 'event', label: 'Event setup' },
   { key: 'charities', label: 'Charities' },
@@ -122,7 +120,6 @@ export default function Admin() {
       {event && tab === 'tonight' && <AdminTonightTab event={event} onChanged={loadEvents} />}
       {event && tab === 'providers' && <AdminProvidersTab />}
       {event && tab === 'attendees' && <AdminAttendeesTab event={event} />}
-      {event && tab === 'raffle' && <AdminRaffleTab event={event} />}
       {event && tab === 'feedback' && <AdminFeedbackTab event={event} />}
       {event && tab === 'event' && <AdminEventsTab event={event} onChanged={loadEvents} />}
       {tab === 'charities' && <AdminCharitiesTab />}

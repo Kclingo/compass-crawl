@@ -1,0 +1,64 @@
+<mjml>
+  <mj-head>
+    <mj-title>You're in, {{first_name}}!</mj-title>
+    <mj-preview>Your free pass to {{event_title}} is confirmed.</mj-preview>
+    <mj-attributes>
+      <mj-all font-family="'IBM Plex Sans', Helvetica, Arial, sans-serif" />
+      <mj-section background-color="#fffcfa" padding="0 36px" />
+      <mj-text color="#121212" font-size="15px" line-height="1.6" padding="0" />
+      <mj-button background-color="#152542" color="#fbf7ef" border-radius="10px" font-weight="700" inner-padding="15px 28px" align="left" />
+      <mj-class name="h" font-family="Cinzel, Georgia, serif" font-weight="700" />
+      <mj-class name="label" color="#6b6b6b" font-size="11px" letter-spacing="2px" text-transform="uppercase" padding="0" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#f4ecda">
+    <mj-section background-color="#152542" padding="28px 36px">
+      <mj-column>
+        <mj-image src="https://media.base44.com/images/public/6ac40fbefb81547231db6c7d/e1cf67541_logo.png" alt="Compass Crawl" width="120px" align="left" padding="0 0 12px 0" />
+        <mj-text color="#fbf7ef" font-family="Cinzel, Georgia, serif" font-size="18px" letter-spacing="3px" text-transform="uppercase" padding="0">
+          Compass Crawl
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding="40px 36px 12px">
+      <mj-column>
+        <mj-text mj-class="h" color="#14233F" font-size="30px" line-height="1.15">Your pass is confirmed</mj-text>
+        <mj-text color="#6b6b6b" font-size="15px">Welcome, {{first_name}}. One seat is yours. This email is your confirmation, so keep it handy.</mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding="8px 36px 8px">
+      <mj-column>
+        <mj-text mj-class="label">When</mj-text>
+        <mj-text color="#121212" font-size="16px" padding="4px 0 14px 0">{{event_date}} at {{event_time}}</mj-text>
+        <mj-text mj-class="label">Where</mj-text>
+        <mj-text color="#121212" font-size="16px" padding="4px 0 14px 0">{{venue}}</mj-text>
+        <mj-text mj-class="label">Your cause</mj-text>
+        <mj-text color="#121212" font-size="16px" padding="4px 0 0 0">{{cause_name}}</mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding="20px 36px 8px">
+      <mj-column>
+        <mj-button href="{{pass_url}}">Open my pass</mj-button>
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding="18px 36px 8px">
+      <mj-column>
+        <mj-text color="#6b6b6b" font-size="13px">
+          Save the date to your calendar from the pass screen. You can change your cause any time until check-in closes,
+          and a gift to your cause is always optional.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#e8d7ac" padding="26px 36px">
+      <mj-column>
+        <mj-text color="#14233F" font-size="13px">The Compass Crawl by Therapy Hour &amp; Co.</mj-text>
+        <mj-text color="#14233F" font-size="12px">A wellness social, not a care setting.</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

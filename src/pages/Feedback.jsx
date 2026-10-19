@@ -5,57 +5,62 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import StarRating from '@/components/StarRating';
 import { SelectField } from '@/components/admin/fields';
-import useCurrentEvent from '@/hooks/useCurrentEvent';
-import useMyTicket from '@/hooks/useMyTicket';
+import StarRating from '@/components/StarRating';
 import BackLink from '@/components/BackLink';
+import useCurrentEvent from '@/hooks/useCurrentEvent';
+import useMyPass from '@/hooks/useMyPass';
 import useEventProviders from '@/hooks/useEventProviders';
+import { buildRunOfShow, isFeedbackOpen } from '@/lib/compass';
 
-const RETURN_OPTIONS = ['Definitely', 'Probably', 'Not sure', 'Probably not'];
+const RETURN_OPTIONS = [
+  { value: 'yes', label: 'Yes' },
+  { value: 'maybe', label: 'Maybe' },
+  { value: 'no', label: 'No' },
+];
 
 export default function Feedback() {
   const { event, loading: eventLoading } = useCurrentEvent();
-  const { ticket, loading: ticketLoading } = useMyTicket(event?.id);
+  const { attendee, loading: passLoading } = useMyPass(event?.id);
   const { eventProviders, providersById } = useEventProviders(event?.id);
   const [receipt, setReceipt] = useState(null);
   const [overall, setOverall] = useState(0);
-  const [ratings, setRatings] = useState({});
-  const [highlights, setHighlights] = useState('');
-  const [improvements, setImprovements] = useState('');
-  const [wouldReturn, setWouldReturn] = useState(RETURN_OPTIONS[0]);
+  const [favoriteStop, setFavoriteStop] = useState('');
+  const [improvement, setImprovement] = useState('');
+  const [wouldReturn, setWouldReturn] = useState('yes');
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (!ticket) return;
-    base44.entities.FeedbackReceipt.filter({ ticket_id: ticket.id }, { limit: 1 }).then((page) =>
+    if (!attendee) return;
+    base44.entities.FeedbackReceipt.filter({ attendee_id: attendee.id }, { limit: 1 }).then((page) =>
       setReceipt(page.items[0] || null)
     );
-  }, [ticket]);
+  }, [attendee]);
 
-  if (eventLoading || ticketLoading) {
+  if (eventLoading || passLoading) {
     return <div className="h-8 w-8 animate-spin rounded-full border-4 border-border border-t-primary" />;
   }
-  if (!event) return <p className="text-sm text-muted-foreground">No crawl to review.</p>;
+  if (!event) return <p className="text-sm text-muted-foreground">No Crawl to review.</p>;
 
-  const open = event.feedback_open || event.status === 'closed';
+  const open = isFeedbackOpen(event);
 
   if (!open) {
     return (
       <div className="rounded-lg border border-border bg-card p-5">
-        <p className="font-heading text-xl">Feedback opens at the close</p>
+        <p className="font-heading text-xl">Feedback opens later tonight</p>
         <p className="mt-1 text-sm text-muted-foreground">
-          Come back after the raffle and tell us how the night went. Everything you write is anonymous.
+          Come back at the close and tell us how the night went. Everything you write is anonymous.
         </p>
         <Button asChild variant="outline" className="mt-4 w-full">
-          <Link to="/">Back to my passport</Link>
+          <Link to="/">Back to Tonight</Link>
         </Button>
       </div>
     );
   }
 
-  if (!ticket) {
+  if (!attendee) {
     return (
       <div className="rounded-lg border border-border bg-card p-5">
         <p className="font-heading text-xl">Feedback is for tonight&rsquo;s guests</p>
@@ -67,25 +72,20 @@ export default function Feedback() {
   }
 
   async function send() {
+    setError('');
     setBusy(true);
-    await base44.entities.Feedback.create({
-      event_id: event.id,
+    const response = await base44.functions.invoke('submitGuestFeedback', {
+      attendee_id: attendee.id,
       overall_rating: overall,
-      provider_ratings: eventProviders.map((ep) => ({
-        provider_id: ep.provider_id,
-        provider_name: providersById[ep.provider_id]?.name || '',
-        rating: ratings[ep.provider_id] || 0,
-      })),
-      highlights,
-      improvements,
+      favorite_stop: favoriteStop,
+      improvement,
       would_return: wouldReturn,
     });
-    await base44.entities.FeedbackReceipt.create({
-      event_id: event.id,
-      ticket_id: ticket.id,
-      submitted: true,
-      submitted_at: new Date().toISOString(),
-    });
+    if (response.data?.error) {
+      setError(response.data.error);
+      setBusy(false);
+      return;
+    }
     setSent(true);
     setBusy(false);
   }
@@ -96,79 +96,60 @@ export default function Feedback() {
         <CheckCircle2 className="mx-auto h-8 w-8 text-accent-strong" />
         <p className="mt-2 font-heading text-xl">Thank you</p>
         <p className="mt-1 text-sm text-muted-foreground">
-          Your answers went in anonymously. Krystal reads every one of them.
+          Your answers went in anonymously, with no name attached.
         </p>
         <Button asChild className="mt-4 w-full">
-          <Link to="/">Back to my passport</Link>
+          <Link to="/">Back to Tonight</Link>
         </Button>
       </div>
     );
   }
 
+  const stops = buildRunOfShow(event, eventProviders, providersById).filter((row) => row.time);
+
   return (
     <div className="space-y-5">
-      <BackLink to="/" label="My passport" />
+      <BackLink to="/" label="Tonight" />
       <div>
-        <h1 className="font-heading text-3xl uppercase tracking-[0.15em]">How was tonight?</h1>
+        <h1 className="font-heading text-3xl uppercase tracking-[0.14em]">How was tonight?</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Anonymous. Ratings, a couple of lines, or both. It takes about a minute.
+          Anonymous and quick: a rating, your favourite stop, one thing to change.
         </p>
       </div>
 
-      <div className="rounded-lg border border-border bg-card p-4">
-        <Label className="text-xs uppercase tracking-widest text-muted-foreground">The night overall</Label>
-        <div className="mt-2">
+      <div className="rounded-lg border border-border bg-card p-5">
+        <Label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">The night overall</Label>
+        <div className="mt-3">
           <StarRating value={overall} onChange={setOverall} />
         </div>
       </div>
 
-      {eventProviders.map((ep) => {
-        const provider = providersById[ep.provider_id];
-        return (
-          <div key={ep.id} className="rounded-lg border border-border bg-card p-4">
-            <p className="text-sm font-medium">{provider?.name}</p>
-            <p className="text-xs text-muted-foreground">{ep.showcase_title}</p>
-            <div className="mt-2">
-              <StarRating
-                size="h-5 w-5"
-                value={ratings[ep.provider_id] || 0}
-                onChange={(n) => setRatings((r) => ({ ...r, [ep.provider_id]: n }))}
-              />
-            </div>
-          </div>
-        );
-      })}
-
-      <div className="space-y-3">
+      <div className="space-y-3 rounded-lg border border-border bg-card p-5">
+        <SelectField
+          label="Favourite stop"
+          value={favoriteStop}
+          onChange={setFavoriteStop}
+          options={[
+            { value: '', label: 'Pick one, or skip' },
+            ...stops.map((row) => ({ value: row.label, label: row.label })),
+          ]}
+        />
         <div>
-          <Label className="text-xs uppercase tracking-widest text-muted-foreground">What stood out?</Label>
-          <Textarea
-            className="mt-1"
-            rows={3}
-            value={highlights}
-            onChange={(e) => setHighlights(e.target.value)}
-            placeholder="A provider, a conversation, something you didn't expect."
-          />
-        </div>
-        <div>
-          <Label className="text-xs uppercase tracking-widest text-muted-foreground">
-            What should we do differently?
+          <Label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            One thing to change
           </Label>
           <Textarea
             className="mt-1"
             rows={3}
-            value={improvements}
-            onChange={(e) => setImprovements(e.target.value)}
+            value={improvement}
+            onChange={(e) => setImprovement(e.target.value)}
             placeholder="Timing, layout, anything at all."
           />
         </div>
-        <SelectField
-          label="Would you come to another crawl?"
-          value={wouldReturn}
-          onChange={setWouldReturn}
-          options={RETURN_OPTIONS.map((o) => ({ value: o, label: o }))}
-        />
+        <SelectField label="Would you come to another Crawl?" value={wouldReturn} onChange={setWouldReturn} options={RETURN_OPTIONS} />
       </div>
+
+      {error && <p className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</p>}
 
       <Button className="w-full" onClick={send} disabled={busy}>
         <Send className="mr-2 h-4 w-4" />

@@ -72,7 +72,7 @@ export default function Providers() {
           <span aria-hidden="true" className="absolute bottom-0 left-0 h-px w-full origin-left animate-draw bg-foreground" />
         </h1>
         <p className="max-w-[760px] text-base leading-[1.8] text-muted-foreground">
-          Say hi at the table to collect their stamp. Profiles stay here after tonight, so you can follow up later.
+          Say hi at their table tonight. Profiles stay here afterwards, so you can follow up whenever you are ready.
         </p>
       </section>
 

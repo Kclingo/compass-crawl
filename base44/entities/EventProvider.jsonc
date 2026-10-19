@@ -23,9 +23,6 @@
     "showcase_order": {
       "type": "number"
     },
-    "stamp_code": {
-      "type": "string"
-    },
     "is_active": {
       "type": "boolean",
       "default": true
@@ -34,5 +31,23 @@
   "required": [
     "event_id",
     "provider_id"
-  ]
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

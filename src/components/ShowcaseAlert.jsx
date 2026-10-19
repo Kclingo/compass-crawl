@@ -2,39 +2,39 @@ import React, { useEffect, useState } from 'react';
 import { BellRing, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import useCurrentEvent from '@/hooks/useCurrentEvent';
-import useMyTicket from '@/hooks/useMyTicket';
+import useMyPass from '@/hooks/useMyPass';
 import useEventProviders from '@/hooks/useEventProviders';
 import { combineDateTime, formatClock } from '@/lib/compass';
 
 export default function ShowcaseAlert() {
   const { event } = useCurrentEvent();
-  const { ticket } = useMyTicket(event?.id);
+  const { attendee } = useMyPass(event?.id);
   const { eventProviders, providersById } = useEventProviders(event?.id);
   const [reminders, setReminders] = useState([]);
   const [now, setNow] = useState(Date.now());
   const [dismissed, setDismissed] = useState([]);
 
   useEffect(() => {
-    if (!ticket) {
+    if (!attendee) {
       setReminders([]);
       return;
     }
-    base44.entities.Reminder.filter({ ticket_id: ticket.id, status: 'pending' }, { limit: 50 }).then((page) =>
+    base44.entities.Reminder.filter({ attendee_id: attendee.id, status: 'pending' }, { limit: 50 }).then((page) =>
       setReminders(page.items)
     );
-  }, [ticket]);
+  }, [attendee]);
 
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 30000);
     return () => clearInterval(timer);
   }, []);
 
-  if (!event || !ticket || !ticket.checked_in_at) return null;
+  if (!event || !attendee || !attendee.checked_in_at) return null;
 
   const savedIds = new Set(reminders.map((r) => r.event_provider_id));
   const due = eventProviders.find((ep) => {
     if (dismissed.includes(ep.id)) return false;
-    if (!ticket.remind_all && !savedIds.has(ep.id)) return false;
+    if (!attendee.remind_all && !savedIds.has(ep.id)) return false;
     const start = combineDateTime(event.date, ep.showcase_time);
     if (!start) return false;
     const minutes = Math.round((start.getTime() - now) / 60000);
