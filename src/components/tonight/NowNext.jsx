@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { formatClock, minutesUntil, nowAndNext } from '@/lib/compass';
 
 export default function NowNext({ event, rows, providersById }) {
-  const { now, next, nextAt } = nowAndNext(event, rows);
+  const { now, next, nextAt, comingUp } = nowAndNext(event, rows);
   if (!now && !next) return null;
 
   const label = (row) => (row.kind === 'showcase' ? row.label : row.label);
@@ -41,6 +41,20 @@ export default function NowNext({ event, rows, providersById }) {
             </span>
           </p>
           {where(next) && <p className="mt-1 text-xs text-muted-foreground">{where(next)}</p>}
+        </div>
+      )}
+
+      {comingUp.length > 0 && (
+        <div className="mt-3 border-t border-border pt-3">
+          <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Coming up</p>
+          <ul className="mt-1 space-y-1 text-sm">
+            {comingUp.map((row) => (
+              <li key={row.key} className="flex justify-between gap-2">
+                <span className="truncate">{label(row)}</span>
+                <span className="text-muted-foreground">{formatClock(row.time)}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </section>

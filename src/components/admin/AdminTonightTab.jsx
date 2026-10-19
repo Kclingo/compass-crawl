@@ -98,7 +98,10 @@ export default function AdminTonightTab({ event }) {
         id: row.id,
         showcase_time: `${String(moved.getHours()).padStart(2, '0')}:${String(moved.getMinutes()).padStart(2, '0')}`,
       });
-      shifted.push({ event_provider_id: row.id, remind_at: new Date(moved.getTime() - 5 * 60000).toISOString() });
+      shifted.push({
+        event_provider_id: row.id,
+        remind_at: new Date(moved.getTime() - (Number(event.reminder_lead_minutes) || 5) * 60000).toISOString(),
+      });
     });
     if (!updates.length) return;
     await base44.entities.EventProvider.bulkUpdate(updates);

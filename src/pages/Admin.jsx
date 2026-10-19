@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
@@ -8,24 +9,25 @@ import AdminEventsTab from '@/components/admin/AdminEventsTab';
 import AdminCharitiesTab from '@/components/admin/AdminCharitiesTab';
 import AdminProvidersTab from '@/components/admin/AdminProvidersTab';
 import AdminTonightTab from '@/components/admin/AdminTonightTab';
-import AdminAttendeesTab from '@/components/admin/AdminAttendeesTab';
+import AdminGuestDesk from '@/components/admin/AdminGuestDesk';
 import AdminFeedbackTab from '@/components/admin/AdminFeedbackTab';
 
 const TABS = [
   { key: 'tonight', label: 'Tonight' },
   { key: 'providers', label: 'Providers' },
-  { key: 'attendees', label: 'Guests' },
+  { key: 'guests', label: 'Guests' },
   { key: 'feedback', label: 'Feedback' },
   { key: 'event', label: 'Event setup' },
   { key: 'charities', label: 'Charities' },
 ];
 
-export default function Admin() {
+export default function Admin({ initialTab = 'tonight' }) {
   const { event: current } = useCurrentEvent();
+  const { pathname } = useLocation();
   const [isAdmin, setIsAdmin] = useState(null);
   const [events, setEvents] = useState([]);
   const [eventId, setEventId] = useState('');
-  const [tab, setTab] = useState('tonight');
+  const [tab, setTab] = useState(initialTab);
 
   const loadEvents = useCallback(async () => {
     const { items } = await base44.entities.Event.list({ sort: 'date', limit: 100 });
@@ -101,6 +103,27 @@ export default function Admin() {
       </div>
 
       <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+        <Link
+          to="/admin"
+          className={cn(
+            'shrink-0 rounded-full border px-3 py-1.5 text-xs',
+            pathname === '/admin' ? 'border-accent bg-accent text-accent-foreground' : 'border-border bg-card'
+          )}
+        >
+          Event &amp; providers
+        </Link>
+        <Link
+          to="/admin/guests"
+          className={cn(
+            'shrink-0 rounded-full border px-3 py-1.5 text-xs',
+            pathname === '/admin/guests' ? 'border-accent bg-accent text-accent-foreground' : 'border-border bg-card'
+          )}
+        >
+          Guest desk
+        </Link>
+      </div>
+
+      <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
         {TABS.map((t) => (
           <button
             key={t.key}
@@ -118,8 +141,8 @@ export default function Admin() {
 
       {!event && <p className="text-sm text-muted-foreground">Create an event to get started.</p>}
       {event && tab === 'tonight' && <AdminTonightTab event={event} onChanged={loadEvents} />}
-      {event && tab === 'providers' && <AdminProvidersTab />}
-      {event && tab === 'attendees' && <AdminAttendeesTab event={event} />}
+      {event && tab === 'providers' && <AdminProvidersTab event={event} />}
+      {event && tab === 'guests' && <AdminGuestDesk event={event} />}
       {event && tab === 'feedback' && <AdminFeedbackTab event={event} />}
       {event && tab === 'event' && <AdminEventsTab event={event} onChanged={loadEvents} />}
       {tab === 'charities' && <AdminCharitiesTab />}

@@ -36,13 +36,15 @@ export default function GetPass() {
   const [busy, setBusy] = useState(false);
   const [waitlisted, setWaitlisted] = useState(false);
   const [seats, setSeats] = useState(null);
+  const [joinEmail, setJoinEmail] = useState('');
 
   const set = (key) => (value) => setForm((f) => ({ ...f, [key]: value }));
 
   useEffect(() => {
-    base44.auth.me().then((user) =>
-      setForm((f) => ({ ...f, full_name: f.full_name || user.full_name || '', email: f.email || user.email || '' }))
-    );
+    base44.auth.me().then((user) => {
+      setForm((f) => ({ ...f, full_name: f.full_name || user.full_name || '', email: f.email || user.email || '' }));
+      setJoinEmail((current) => current || user.email || '');
+    });
   }, []);
 
   useEffect(() => {
@@ -111,10 +113,59 @@ export default function GetPass() {
     }
   }
 
+  async function joinWaitlist() {
+    setError('');
+    if (!joinEmail.trim()) {
+      setError('Add the email we should use to reach you.');
+      return;
+    }
+    setBusy(true);
+    try {
+      const response = await base44.functions.invoke('claimGuestPass', {
+        event_id: event.id,
+        email: joinEmail.trim(),
+        waitlist_only: true,
+      });
+      const data = response.data || {};
+      if (data.error) throw new Error(data.error);
+      setWaitlisted(true);
+      setBusy(false);
+    } catch (err) {
+      setError(err.message || 'That did not go through. Try again in a moment.');
+      setBusy(false);
+    }
+  }
+
   if (loading || passLoading) {
     return <div className="h-8 w-8 animate-spin rounded-full border-4 border-border border-t-primary" />;
   }
   if (!event) return <p className="text-sm text-muted-foreground">The next Crawl is being planned.</p>;
+
+  if (seats === 0 && !attendee) {
+    return (
+      <div className="space-y-5">
+        <BackLink to="/" label="Tonight" />
+        <div>
+          <h1 className="font-heading text-3xl uppercase tracking-[0.14em]">This Crawl is full</h1>
+          <p className="mt-1 font-tagline text-lg italic text-muted-foreground">
+            {event.awareness_theme ? `${event.awareness_theme} · ` : ''}
+            {event.title}
+          </p>
+        </div>
+
+        <div className="space-y-3 rounded-lg border border-border bg-card p-5">
+          <p className="text-sm text-muted-foreground">
+            {event.waitlist_message || 'This Crawl is full. Join the list for next month.'}
+          </p>
+          <TextField label="Email" type="email" value={joinEmail} onChange={setJoinEmail} />
+          {error && <p className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</p>}
+          <Button className="w-full" onClick={joinWaitlist} disabled={busy}>
+            {busy ? 'Adding you to the list…' : 'Join the list'}
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (waitlisted) {
     return (

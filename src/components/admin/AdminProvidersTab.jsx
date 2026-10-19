@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import ProviderAvatar from '@/components/ProviderAvatar';
 import { TextAreaField } from '@/components/admin/fields';
+import ProviderAuditTable from '@/components/admin/ProviderAuditTable';
 import { cn } from '@/lib/utils';
 
 const EMPTY = {
@@ -25,7 +26,7 @@ const EMPTY = {
   active: true,
 };
 
-export default function AdminProvidersTab() {
+export default function AdminProvidersTab({ event }) {
   const [providers, setProviders] = useState([]);
   const [form, setForm] = useState(EMPTY);
   const [uploading, setUploading] = useState(false);
@@ -63,6 +64,8 @@ export default function AdminProvidersTab() {
 
   return (
     <div className="space-y-4">
+      {event && <ProviderAuditTable event={event} />}
+
       <div className="flex flex-wrap gap-2">
         {providers.map((p) => (
           <button

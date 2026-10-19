@@ -5,7 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SelectField, TextAreaField, TextField, ToggleField } from '@/components/admin/fields';
 
-const NUMERIC = ['capacity', 'slot_length_minutes', 'showcases_at_a_time', 'gift_suggested_amount'];
+const NUMERIC = [
+  'capacity',
+  'slot_length_minutes',
+  'showcases_at_a_time',
+  'gift_suggested_amount',
+  'reminder_lead_minutes',
+];
 
 const STATUS_OPTIONS = [
   { value: 'draft', label: 'Draft' },
@@ -115,6 +121,13 @@ export default function AdminEventsTab({ event, onChanged }) {
         type="number"
         value={form.gift_suggested_amount}
         onChange={set('gift_suggested_amount')}
+      />
+
+      <TextField
+        label="Reminder lead (min)"
+        type="number"
+        value={form.reminder_lead_minutes}
+        onChange={set('reminder_lead_minutes')}
       />
 
       <TextField label="Waitlist message" value={form.waitlist_message} onChange={set('waitlist_message')} />

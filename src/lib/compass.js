@@ -100,6 +100,7 @@ export function nowAndNext(event, rows, now = new Date()) {
     now: past.length ? past[past.length - 1].row : null,
     next: upcoming.length ? upcoming[0].row : null,
     nextAt: upcoming.length ? upcoming[0].at : null,
+    comingUp: upcoming.slice(1, 3).map((r) => r.row),
   };
 }
 

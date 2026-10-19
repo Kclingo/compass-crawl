@@ -56,7 +56,9 @@ export default function Schedule() {
         attendee_id: attendee.id,
         user_id: attendee.user_id || '',
         event_provider_id: row.ep.id,
-        remind_at: start ? new Date(start.getTime() - 5 * 60000).toISOString() : '',
+        remind_at: start
+          ? new Date(start.getTime() - (Number(event.reminder_lead_minutes) || 5) * 60000).toISOString()
+          : '',
         channel: attendee.text_opt_in ? 'sms' : 'in_app',
         status: 'pending',
       });
@@ -74,7 +76,8 @@ export default function Schedule() {
       <div>
         <h1 className="font-heading text-3xl uppercase tracking-[0.14em]">Schedule</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          No set route. Pick the showcases you want and we&rsquo;ll remind you 5 minutes before each one.
+          No set route. Pick the showcases you want and we&rsquo;ll remind you{' '}
+          {Number(event.reminder_lead_minutes) || 5} minutes before each one.
         </p>
       </div>
 

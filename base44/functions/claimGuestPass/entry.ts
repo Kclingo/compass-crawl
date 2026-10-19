@@ -13,12 +13,7 @@ export default async function (req) {
     const mobile = (body && body.mobile ? String(body.mobile) : '').trim();
 
     if (!eventId) return Response.json({ error: 'event_id is required' }, { status: 400 });
-    if (!fullName || !email || !mobile) {
-      return Response.json({ error: 'Full name, email and mobile number are required.' }, { status: 400 });
-    }
-    if (!body.eighteen_confirmed) {
-      return Response.json({ error: 'Guests must confirm they are 18 or older.' }, { status: 400 });
-    }
+    if (!email) return Response.json({ error: 'An email address is required.' }, { status: 400 });
 
     const event = await base44.asServiceRole.entities.Event.get(eventId);
     if (!event) return Response.json({ error: 'Event not found' }, { status: 404 });
@@ -39,14 +34,25 @@ export default async function (req) {
     const capacity = Number(event.capacity ?? 40);
     const taken = await base44.asServiceRole.entities.Attendee.count({ event_id: eventId, status: 'active' });
     const full = taken >= capacity;
+    // Once the Crawl is full the only thing we need is an email for the next one.
+    const waitlistJoin = full && Boolean(body.waitlist_only);
+
+    if (!waitlistJoin) {
+      if (!fullName || !mobile) {
+        return Response.json({ error: 'Full name, email and mobile number are required.' }, { status: 400 });
+      }
+      if (!body.eighteen_confirmed) {
+        return Response.json({ error: 'Guests must confirm they are 18 or older.' }, { status: 400 });
+      }
+    }
 
     const attendee = await base44.asServiceRole.entities.Attendee.create({
       event_id: eventId,
       user_id: user.id,
-      full_name: fullName,
+      full_name: waitlistJoin ? fullName || user.full_name || email : fullName,
       email,
       mobile,
-      eighteen_confirmed: true,
+      eighteen_confirmed: waitlistJoin ? false : true,
       text_opt_in: Boolean(body.text_opt_in),
       text_opt_in_at: body.text_opt_in ? new Date().toISOString() : '',
       status: full ? 'waitlist' : 'active',

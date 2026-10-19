@@ -95,12 +95,22 @@ export default function Feedback() {
       <div className="rounded-lg border border-accent bg-card p-5 text-center">
         <CheckCircle2 className="mx-auto h-8 w-8 text-accent-strong" />
         <p className="mt-2 font-heading text-xl">Thank you</p>
+        <p className="mt-1 font-tagline text-lg italic text-muted-foreground">Progress lives in good company.</p>
         <p className="mt-1 text-sm text-muted-foreground">
           Your answers went in anonymously, with no name attached.
         </p>
+        <div className="mt-4 rounded-lg border border-border bg-secondary p-4 text-left">
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">The Gratitude Tree</p>
+          <p className="mt-1 text-sm">
+            Before you go, write one line of thanks on a leaf and hang it on the tree by the welcome table.
+          </p>
+        </div>
         <Button asChild className="mt-4 w-full">
           <Link to="/">Back to Tonight</Link>
         </Button>
+        <p className="mt-3 text-xs text-muted-foreground">
+          The next Crawl theme lands in the app first, so watch Tonight for the date.
+        </p>
       </div>
     );
   }

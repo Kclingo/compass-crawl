@@ -73,6 +73,7 @@ const AuthenticatedApp = () => {
           <Route path="feedback" element={<Feedback />} />
           <Route element={<AdminRoute />}>
             <Route path="admin" element={<Admin />} />
+            <Route path="admin/guests" element={<Admin initialTab="guests" />} />
           </Route>
         </Route>
       </Route>

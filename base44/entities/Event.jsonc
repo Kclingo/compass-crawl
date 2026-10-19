@@ -64,6 +64,11 @@
       "type": "string",
       "description": "Time anonymous feedback opens, 24h HH:MM"
     },
+    "reminder_lead_minutes": {
+      "type": "number",
+      "default": 5,
+      "description": "How many minutes before a showcase the reminder fires"
+    },
     "slot_length_minutes": {
       "type": "number",
       "default": 20
