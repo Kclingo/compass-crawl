@@ -6,12 +6,14 @@ export default function useMyPass(eventId) {
   const [attendee, setAttendee] = useState(null);
   const [pick, setPick] = useState(null);
   const [loading, setLoading] = useState(true);
+  // Which event the state above belongs to. Until the lookup has run for the
+  // current event, screens must not read this as "this guest has no pass".
+  const [loadedFor, setLoadedFor] = useState(null);
 
   const reload = useCallback(async () => {
     if (!eventId) {
       setAttendee(null);
       setPick(null);
-      setLoading(false);
       return;
     }
     const user = await base44.auth.me();
@@ -31,13 +33,18 @@ export default function useMyPass(eventId) {
     } else {
       setPick(null);
     }
-    setLoading(false);
+    setLoadedFor(eventId);
   }, [eventId]);
 
   useEffect(() => {
     setLoading(true);
-    reload();
+    reload().finally(() => setLoading(false));
   }, [reload]);
 
-  return { attendee, pick, loading, reload };
+  return {
+    attendee,
+    pick,
+    loading: loading || (eventId ? loadedFor !== eventId : false),
+    reload,
+  };
 }
