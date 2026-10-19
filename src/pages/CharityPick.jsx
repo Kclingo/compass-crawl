@@ -59,7 +59,7 @@ export default function CharityPick() {
     }
     await reload();
     setSaving(false);
-    if (!pick) navigate('/gift');
+    if (!pick) navigate('/pass');
   }
 
   return (
@@ -106,7 +106,7 @@ export default function CharityPick() {
       </div>
 
       <Button asChild className="w-full" variant={pick ? 'default' : 'outline'}>
-        <Link to={pick ? '/pass' : '/gift'}>{pick ? 'Back to my pass' : 'Skip the gift for now'}</Link>
+        <Link to="/pass">{pick ? 'Back to my pass' : 'Go to my pass'}</Link>
       </Button>
     </div>
   );

@@ -104,7 +104,7 @@ export default function Pass() {
 
       {attendee.gift_status !== 'paid' && attendee.status === 'active' && (
         <Button asChild variant="outline" className="w-full">
-          <Link to="/gift">Give {money(event.gift_suggested_amount || 5)} to {charity ? charity.name : 'my cause'}</Link>
+          <Link to="/gift">Add a gift to {charity ? charity.name : 'my cause'}</Link>
         </Button>
       )}
 

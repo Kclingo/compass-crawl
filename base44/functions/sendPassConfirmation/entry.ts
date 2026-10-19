@@ -34,6 +34,9 @@ export default async function (req) {
       .filter(Boolean)
       .join(' ');
 
+    const headerUrl = req.headers.get('x-base44-app-url');
+    const appUrl = (headerUrl || 'https://compass-crawl-connect.base44.app').replace(/\/+$/, '');
+
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: attendee.email,
       template_name: 'PassConfirmation',
@@ -44,6 +47,7 @@ export default async function (req) {
         event_time: eventTime,
         venue: event.venue || '',
         cause_name: causeName,
+        pass_url: appUrl + '/pass',
       },
     });
 

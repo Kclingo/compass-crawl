@@ -46,7 +46,9 @@ export default async function (req) {
       }
     }
 
-    const attendee = await base44.asServiceRole.entities.Attendee.create({
+    // Created as the guest themselves (not service role) so the pass is owned by
+    // their account: reads and edits then match on created_by_id, not just user_id.
+    const attendee = await base44.entities.Attendee.create({
       event_id: eventId,
       user_id: user.id,
       full_name: waitlistJoin ? fullName || user.full_name || email : fullName,
@@ -56,6 +58,7 @@ export default async function (req) {
       text_opt_in: Boolean(body.text_opt_in),
       text_opt_in_at: body.text_opt_in ? new Date().toISOString() : '',
       status: full ? 'waitlist' : 'active',
+      remind_all: false,
       gift_status: 'none',
       gift_amount: 0,
     });
