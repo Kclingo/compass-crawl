@@ -32,8 +32,9 @@ export default function AdminGuestDesk({ event }) {
 
   const loadGuests = useCallback(
     async (term) => {
-      const query = term
-        ? { event_id: event.id, full_name: { $regex: term, $options: 'i' } }
+      const safe = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const query = safe
+        ? { event_id: event.id, full_name: { $regex: safe, $options: 'i' } }
         : { event_id: event.id };
       const page = await base44.entities.Attendee.filter(query, { sort: '-created_date', limit: 100 });
       setGuests(page.items);
@@ -140,7 +141,7 @@ export default function AdminGuestDesk({ event }) {
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <Metric label="Checked in" value={metrics?.arrived ?? '—'} />
         <Metric label="Text opt-ins" value={metrics?.optIns ?? '—'} />
-        <Metric label="$5 gifts" value={metrics ? money(metrics.gifts) : '—'} />
+        <Metric label="Gift dollars" value={metrics ? money(metrics.gifts) : '—'} />
         <Metric label="Feedback" value={metrics?.responses ?? '—'} />
       </div>
 
@@ -208,13 +209,19 @@ export default function AdminGuestDesk({ event }) {
                   {row.gift_status === 'paid' ? ` · gifted ${money(row.gift_amount)}` : ''}
                 </p>
               </div>
-              <Button
-                size="sm"
-                variant={row.checked_in_at ? 'secondary' : 'outline'}
-                onClick={() => toggleCheckIn(row)}
-              >
-                {row.checked_in_at ? 'Checked in' : 'Check in'}
-              </Button>
+              {row.status === 'waitlist' ? (
+                <span className="shrink-0 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
+                  Waitlist
+                </span>
+              ) : (
+                <Button
+                  size="sm"
+                  variant={row.checked_in_at ? 'secondary' : 'outline'}
+                  onClick={() => toggleCheckIn(row)}
+                >
+                  {row.checked_in_at ? 'Checked in' : 'Check in'}
+                </Button>
+              )}
             </li>
           ))}
           {!guests.length && <li className="text-sm text-muted-foreground">No guests match that name.</li>}

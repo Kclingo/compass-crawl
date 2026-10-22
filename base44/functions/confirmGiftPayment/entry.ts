@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.54';
 import { stripeGet, stripeErrorMessage } from '../../shared/stripe.ts';
+import { recordPaidGift } from '../../shared/gifts.ts';
 
 export default async function (req) {
   try {
@@ -25,26 +26,16 @@ export default async function (req) {
     const paid = session.payment_status === 'paid';
 
     if (attendeeId && paid) {
-      const amount = Number(session.amount_total || 0) / 100;
       const mine = await base44.entities.Attendee.filter({ id: attendeeId }, { limit: 1 });
       const attendee = (mine.items || [])[0];
       if (!attendee) return Response.json({ error: 'Pass not found' }, { status: 404 });
 
-      await base44.asServiceRole.entities.Attendee.update(attendeeId, {
-        gift_status: 'paid',
-        gift_amount: amount,
-        gift_ref: session.id,
+      // Records the amount on the pass and attributes it to the cause picked.
+      await recordPaidGift(base44, {
+        attendeeId,
+        amountCents: session.amount_total,
+        sessionId: session.id,
       });
-
-      // Attribute the gift to the cause this guest picked.
-      const pickPage = await base44.asServiceRole.entities.CharityPick.filter(
-        { attendee_id: attendeeId },
-        { limit: 1 }
-      );
-      const pick = (pickPage.items || [])[0];
-      if (pick) {
-        await base44.asServiceRole.entities.CharityPick.update(pick.id, { amount });
-      }
     }
 
     return Response.json({ status: session.payment_status, attendee_id: attendeeId || null, paid });
