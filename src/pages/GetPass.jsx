@@ -9,6 +9,7 @@ import { SelectField, TextField } from '@/components/admin/fields';
 import useCurrentEvent from '@/hooks/useCurrentEvent';
 import useMyPass from '@/hooks/useMyPass';
 import BackLink from '@/components/BackLink';
+import StepHint from '@/components/StepHint';
 
 const OPT_IN_COPY = 'Text me event reminders. Msg & data rates may apply. Reply STOP to opt out.';
 const NOT_SAYING = 'Prefer not to say';
@@ -159,7 +160,7 @@ export default function GetPass() {
           </p>
           <TextField label="Email" type="email" value={joinEmail} onChange={setJoinEmail} />
           {error && <p className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</p>}
-          <Button className="w-full" onClick={joinWaitlist} disabled={busy}>
+          <Button size="lg" className="w-full" onClick={joinWaitlist} disabled={busy}>
             {busy ? 'Adding you to the list…' : 'Join the list'}
           </Button>
         </div>
@@ -194,7 +195,12 @@ export default function GetPass() {
         </p>
       </div>
 
+      <StepHint current={1} />
+
       <div className="space-y-3 rounded-lg border border-border bg-card p-5">
+        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+          Your details · all three required
+        </p>
         <TextField label="Full name" value={form.full_name} onChange={set('full_name')} />
         <TextField label="Email" type="email" value={form.email} onChange={set('email')} />
         <TextField
@@ -258,7 +264,7 @@ export default function GetPass() {
         <p className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</p>
       )}
 
-      <Button className="w-full" onClick={submit} disabled={busy}>
+      <Button size="lg" className="w-full" onClick={submit} disabled={busy}>
         {busy ? 'Saving your seat…' : 'Claim my free pass'}
       </Button>
       <p className="flex items-center justify-center gap-2 text-xs text-muted-foreground">

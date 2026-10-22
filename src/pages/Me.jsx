@@ -60,7 +60,7 @@ export default function Me() {
         <div className="rounded-lg border border-border bg-card p-5">
           <p className="font-heading text-xl">No pass yet</p>
           <p className="mt-1 text-sm text-muted-foreground">Your details live here once you claim a pass.</p>
-          <Button asChild className="mt-4 w-full">
+          <Button asChild size="lg" className="mt-4 w-full">
             <Link to="/pass/new">Claim my free pass</Link>
           </Button>
         </div>

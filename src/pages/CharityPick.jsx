@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import useCurrentEvent from '@/hooks/useCurrentEvent';
 import useMyPass from '@/hooks/useMyPass';
 import BackLink from '@/components/BackLink';
+import StepHint from '@/components/StepHint';
 import { isCheckInClosed } from '@/lib/compass';
 import { cn } from '@/lib/utils';
 
@@ -65,10 +66,12 @@ export default function CharityPick() {
   return (
     <div className="space-y-5">
       <BackLink to="/" label="Tonight" />
+      <StepHint current={2} />
+
       <div>
         <h1 className="font-heading text-3xl uppercase tracking-[0.14em]">Pick your cause</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Pick exactly one of this month&rsquo;s four causes.
+          Tap one of this month&rsquo;s four causes to choose it.
           {locked ? ' Check-in has closed, so this is locked.' : ' You can change it until check-in closes.'}
         </p>
       </div>
@@ -105,7 +108,7 @@ export default function CharityPick() {
         )}
       </div>
 
-      <Button asChild className="w-full" variant={pick ? 'default' : 'outline'}>
+      <Button asChild size="lg" className="w-full" variant={pick ? 'default' : 'outline'}>
         <Link to="/pass">{pick ? 'Back to my pass' : 'Go to my pass'}</Link>
       </Button>
     </div>

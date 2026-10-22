@@ -126,15 +126,19 @@ export default function AdminTonightTab({ event }) {
               {event.slot_length_minutes} min per showcase, {event.showcases_at_a_time} at a time.
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button size="sm" variant="outline" onClick={buildTimes}>
-              <Sparkles className="mr-1 h-4 w-4" /> Build times
+              <Sparkles className="mr-1 h-4 w-4" /> Fill in times
             </Button>
             <Button size="sm" variant="outline" onClick={shiftRunningBehind}>
               <Clock className="mr-1 h-4 w-4" /> Running behind +10
             </Button>
           </div>
         </div>
+        <p className="mt-3 text-xs text-muted-foreground">
+          Fill in times sets each showcase from the welcome time. Running behind +10 pushes every remaining slot
+          ten minutes later. Edit a row, then tap Save.
+        </p>
       </div>
 
       {rows.map((row) => (
@@ -167,8 +171,8 @@ export default function AdminTonightTab({ event }) {
             onChange={(e) => edit(row.id, 'showcase_description', e.target.value)}
             placeholder="One-line description"
           />
-          <Button size="sm" onClick={() => saveRow(row)}>
-            <Save className="mr-1 h-4 w-4" /> Save
+          <Button onClick={() => saveRow(row)}>
+            <Save className="mr-1 h-4 w-4" /> Save this stop
           </Button>
         </div>
       ))}
@@ -179,7 +183,7 @@ export default function AdminTonightTab({ event }) {
           onChange={(e) => setAddId(e.target.value)}
           className="h-10 flex-1 rounded-md border border-input bg-card px-3 text-sm"
         >
-          <option value="">Add a provider to tonight…</option>
+          <option value="">Choose a provider to add…</option>
           {unassigned.map((p) => (
             <option key={p.id} value={p.id}>
               {p.name}
@@ -187,7 +191,7 @@ export default function AdminTonightTab({ event }) {
           ))}
         </select>
         <Button onClick={addProvider}>
-          <Plus className="h-4 w-4" />
+          <Plus className="h-4 w-4" /> Add
         </Button>
       </div>
 

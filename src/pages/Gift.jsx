@@ -113,7 +113,7 @@ export default function Gift() {
 
       {error && <p className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</p>}
 
-      <Button className="w-full" onClick={give} disabled={busy}>
+      <Button size="lg" className="w-full" onClick={give} disabled={busy}>
         <Heart className="mr-2 h-4 w-4" /> {busy ? 'Opening checkout…' : `Give ${money(amount)}`}
       </Button>
       <Button variant="ghost" className="w-full" onClick={() => navigate('/pass')}>

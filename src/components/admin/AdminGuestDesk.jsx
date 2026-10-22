@@ -190,12 +190,14 @@ export default function AdminGuestDesk({ event }) {
 
       <div className="rounded-lg border border-border bg-card p-4">
         <p className="text-xs uppercase tracking-widest text-muted-foreground">Greeter desk</p>
+        <p className="mt-1 text-xs text-muted-foreground">Search a name, then tap Check in as they arrive.</p>
         <div className="mt-3 flex items-center gap-2">
-          <Search className="h-4 w-4 text-muted-foreground" />
+          <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search a guest by name"
+            className="h-11"
           />
         </div>
         <ul className="mt-3 space-y-2">
@@ -215,11 +217,11 @@ export default function AdminGuestDesk({ event }) {
                 </span>
               ) : (
                 <Button
-                  size="sm"
-                  variant={row.checked_in_at ? 'secondary' : 'outline'}
+                  variant={row.checked_in_at ? 'secondary' : 'default'}
                   onClick={() => toggleCheckIn(row)}
+                  className="shrink-0"
                 >
-                  {row.checked_in_at ? 'Checked in' : 'Check in'}
+                  {row.checked_in_at ? 'Undo check-in' : 'Check in'}
                 </Button>
               )}
             </li>
@@ -228,11 +230,14 @@ export default function AdminGuestDesk({ event }) {
         </ul>
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
-        <ExportButton label="Guests" onClick={exportGuests} />
-        <ExportButton label="Causes" onClick={exportCauses} />
-        <ExportButton label="Feedback" onClick={exportFeedback} />
-        <ExportButton label="Demographics" onClick={exportDemographics} />
+      <div className="space-y-2">
+        <p className="text-xs uppercase tracking-widest text-muted-foreground">Download reports</p>
+        <div className="grid grid-cols-2 gap-2">
+          <ExportButton label="Guests" onClick={exportGuests} />
+          <ExportButton label="Causes" onClick={exportCauses} />
+          <ExportButton label="Feedback" onClick={exportFeedback} />
+          <ExportButton label="Demographics" onClick={exportDemographics} />
+        </div>
       </div>
     </div>
   );

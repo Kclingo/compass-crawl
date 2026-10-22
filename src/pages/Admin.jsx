@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+
 import { Plus } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
@@ -14,18 +14,21 @@ import AdminFeedbackTab from '@/components/admin/AdminFeedbackTab';
 import AdminDonationsTab from '@/components/admin/AdminDonationsTab';
 
 const TABS = [
-  { key: 'tonight', label: 'Tonight' },
-  { key: 'providers', label: 'Providers' },
-  { key: 'guests', label: 'Guests' },
-  { key: 'feedback', label: 'Feedback' },
-  { key: 'giving', label: 'Giving' },
-  { key: 'event', label: 'Event setup' },
-  { key: 'charities', label: 'Charities' },
+  {
+    key: 'tonight',
+    label: 'Run of show',
+    hint: 'Add stops, set each showcase time, and shift the night by 10 minutes when it runs late.',
+  },
+  { key: 'providers', label: 'Providers', hint: 'Create and edit the practitioners taking part.' },
+  { key: 'guests', label: 'Guest desk', hint: 'Search a guest to check them in, watch arrivals, and download reports.' },
+  { key: 'feedback', label: 'Feedback', hint: 'Anonymous ratings and comments guests left after the night.' },
+  { key: 'giving', label: 'Giving totals', hint: 'Gift dollars collected and which cause each one supports.' },
+  { key: 'event', label: 'Event details', hint: 'Date, venue, times, capacity, and the copy guests read.' },
+  { key: 'charities', label: 'Charities', hint: 'The causes guests choose from.' },
 ];
 
 export default function Admin({ initialTab = 'tonight' }) {
   const { event: current } = useCurrentEvent();
-  const { pathname } = useLocation();
   const [isAdmin, setIsAdmin] = useState(null);
   const [events, setEvents] = useState([]);
   const [eventId, setEventId] = useState('');
@@ -84,13 +87,21 @@ export default function Admin({ initialTab = 'tonight' }) {
 
   return (
     <div className="space-y-5">
+      <div>
+        <h1 className="font-heading text-3xl uppercase tracking-[0.15em]">Back office</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Pick the event you are working on, then a section.</p>
+      </div>
+
       <div className="flex items-end justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <h1 className="font-heading text-3xl uppercase tracking-[0.15em]">Back office</h1>
+          <label htmlFor="admin-event" className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+            Working on
+          </label>
           <select
+            id="admin-event"
             value={eventId}
             onChange={(e) => setEventId(e.target.value)}
-            className="mt-2 h-10 w-full rounded-md border border-input bg-card px-3 text-sm"
+            className="mt-1 h-11 w-full rounded-xl border border-input bg-card px-3 text-sm"
           >
             {events.map((e) => (
               <option key={e.id} value={e.id}>
@@ -99,46 +110,30 @@ export default function Admin({ initialTab = 'tonight' }) {
             ))}
           </select>
         </div>
-        <Button variant="outline" size="sm" onClick={createEvent}>
-          <Plus className="mr-1 h-4 w-4" /> New
+        <Button variant="outline" onClick={createEvent}>
+          <Plus className="mr-1 h-4 w-4" /> New event
         </Button>
       </div>
 
-      <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
-        <Link
-          to="/admin"
-          className={cn(
-            'shrink-0 rounded-full border px-3 py-1.5 text-xs',
-            pathname === '/admin' ? 'border-accent bg-accent text-accent-foreground' : 'border-border bg-card'
-          )}
-        >
-          Event &amp; providers
-        </Link>
-        <Link
-          to="/admin/guests"
-          className={cn(
-            'shrink-0 rounded-full border px-3 py-1.5 text-xs',
-            pathname === '/admin/guests' ? 'border-accent bg-accent text-accent-foreground' : 'border-border bg-card'
-          )}
-        >
-          Guest desk
-        </Link>
-      </div>
-
-      <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
-        {TABS.map((t) => (
-          <button
-            key={t.key}
-            type="button"
-            onClick={() => setTab(t.key)}
-            className={cn(
-              'shrink-0 rounded-full border px-3 py-1.5 text-xs',
-              tab === t.key ? 'border-accent bg-accent text-accent-foreground' : 'border-border bg-card'
-            )}
-          >
-            {t.label}
-          </button>
-        ))}
+      <div className="space-y-2">
+        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+          {TABS.map((t) => (
+            <button
+              key={t.key}
+              type="button"
+              onClick={() => setTab(t.key)}
+              className={cn(
+                'shrink-0 rounded-full border px-4 py-2 text-sm',
+                tab === t.key ? 'border-accent bg-accent text-accent-foreground' : 'border-border bg-card'
+              )}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+        <p className="text-sm text-muted-foreground">
+          {TABS.find((t) => t.key === tab)?.hint}
+        </p>
       </div>
 
       {!event && <p className="text-sm text-muted-foreground">Create an event to get started.</p>}

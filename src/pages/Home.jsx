@@ -64,7 +64,7 @@ export default function Home() {
               <p className="mt-1 text-sm text-muted-foreground">
                 Four questions, fully anonymous, helps the next Crawl.
               </p>
-              <Button asChild variant="outline" className="mt-4 w-full">
+              <Button asChild variant="outline" size="lg" className="mt-4 w-full">
                 <Link to="/feedback">Share feedback</Link>
               </Button>
             </section>
@@ -77,7 +77,7 @@ export default function Home() {
               <p className="mt-1 text-sm text-muted-foreground">
                 A gift goes through Therapy Hour &amp; Co. to the cause you picked. Never required.
               </p>
-              <Button asChild variant="outline" className="mt-4 w-full">
+              <Button asChild variant="outline" size="lg" className="mt-4 w-full">
                 <Link to="/gift">Give what feels right</Link>
               </Button>
             </section>
@@ -89,7 +89,7 @@ export default function Home() {
           <p className="mt-1 text-sm text-muted-foreground">
             Add your name, email and mobile, then pick one of this month&rsquo;s causes. {event.capacity || 40} seats.
           </p>
-          <Button asChild className="mt-4 w-full">
+          <Button asChild size="lg" className="mt-4 w-full">
             <Link to="/pass/new">Claim my free pass</Link>
           </Button>
           <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">

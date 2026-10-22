@@ -101,7 +101,7 @@ export default function CheckIn() {
             Checked in at {checkedInAt}
             {isEventNight(event) ? ' · you are all set for tonight.' : '.'}
           </p>
-          <Button asChild className="mt-4 w-full">
+          <Button asChild size="lg" className="mt-4 w-full">
             <Link to="/">Open Tonight</Link>
           </Button>
         </div>
@@ -124,7 +124,7 @@ export default function CheckIn() {
               <p className="mt-1 text-sm text-muted-foreground">
                 Welcome, {attendee.full_name}. One tap and tonight is open to you.
               </p>
-              <Button className="mt-4 w-full" onClick={markArrived} disabled={marking}>
+              <Button size="lg" className="mt-4 w-full" onClick={markArrived} disabled={marking}>
                 {marking ? 'Checking you in…' : 'Check in now'}
               </Button>
             </>

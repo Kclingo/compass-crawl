@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import useCurrentEvent from '@/hooks/useCurrentEvent';
 import useMyPass from '@/hooks/useMyPass';
 import BackLink from '@/components/BackLink';
+import StepHint from '@/components/StepHint';
 import { downloadIcs, formatClock, formatEventDate, money } from '@/lib/compass';
 
 export default function Pass() {
@@ -59,6 +60,8 @@ export default function Pass() {
         <p className="mt-1 text-sm text-muted-foreground">Keep this screen. It&rsquo;s your pass for the night.</p>
       </div>
 
+      <StepHint current={3} />
+
       <section className="rounded-lg bg-primary p-6 text-primary-foreground">
         <p className="text-[11px] uppercase tracking-[0.25em] text-secondary">
           {event.awareness_theme || 'Compass Crawl'}
@@ -95,7 +98,7 @@ export default function Pass() {
         <Button variant="outline" onClick={() => downloadIcs(event)}>
           <CalendarPlus className="mr-2 h-4 w-4" /> Add to calendar
         </Button>
-        <Button asChild>
+        <Button asChild size="lg">
           <Link to={`/check-in?event=${event.id}`}>
             <QrCode className="mr-2 h-4 w-4" /> Check in at the door
           </Link>
