@@ -34,8 +34,9 @@
     --chart-4: 220 14% 38%;
     --chart-5: 43 38% 80%;
     --radius: 1rem;
-    /* Passport security-paper texture, blended into the page and card surfaces */
-    --texture-paper: url('https://media.base44.com/images/public/6ac40fbefb81547231db6c7d/890212827_generated_image.png');
+    /* Passport security-paper texture: faint engraved guilloche lines, no speckles */
+    --texture-paper: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='120'%20height='120'%20viewBox='0%200%20120%20120'%3E%3Cg%20fill='none'%20stroke='%239C7426'%20stroke-opacity='0.10'%20stroke-width='0.6'%3E%3Cpath%20d='M0%208%20q30%20-7%2060%200%20t60%200'/%3E%3Cpath%20d='M0%2023%20q30%20-7%2060%200%20t60%200'/%3E%3Cpath%20d='M0%2038%20q30%20-7%2060%200%20t60%200'/%3E%3Cpath%20d='M0%2053%20q30%20-7%2060%200%20t60%200'/%3E%3Cpath%20d='M0%2068%20q30%20-7%2060%200%20t60%200'/%3E%3Cpath%20d='M0%2083%20q30%20-7%2060%200%20t60%200'/%3E%3Cpath%20d='M0%2098%20q30%20-7%2060%200%20t60%200'/%3E%3Cpath%20d='M0%20113%20q30%20-7%2060%200%20t60%200'/%3E%3C/g%3E%3C/svg%3E");
+    --texture-blend: multiply;
     --font-heading: 'Cinzel', Georgia, serif;
     --font-body: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
     --font-display: 'Cinzel', Georgia, serif;
@@ -52,6 +53,8 @@
   }
 
   .dark {
+    --texture-paper: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='120'%20height='120'%20viewBox='0%200%20120%20120'%3E%3Cg%20fill='none'%20stroke='%23E8D7AC'%20stroke-opacity='0.08'%20stroke-width='0.6'%3E%3Cpath%20d='M0%208%20q30%20-7%2060%200%20t60%200'/%3E%3Cpath%20d='M0%2023%20q30%20-7%2060%200%20t60%200'/%3E%3Cpath%20d='M0%2038%20q30%20-7%2060%200%20t60%200'/%3E%3Cpath%20d='M0%2053%20q30%20-7%2060%200%20t60%200'/%3E%3Cpath%20d='M0%2068%20q30%20-7%2060%200%20t60%200'/%3E%3Cpath%20d='M0%2083%20q30%20-7%2060%200%20t60%200'/%3E%3Cpath%20d='M0%2098%20q30%20-7%2060%200%20t60%200'/%3E%3Cpath%20d='M0%20113%20q30%20-7%2060%200%20t60%200'/%3E%3C/g%3E%3C/svg%3E");
+    --texture-blend: screen;
     --background: 218 52% 12%;
     --foreground: 42 54% 91%;
     --card: 218 46% 17%;
@@ -97,9 +100,9 @@
   body {
     @apply bg-background text-foreground font-body;
     background-image: var(--texture-paper);
-    background-size: 340px 340px;
+    background-size: 190px 190px;
     background-repeat: repeat;
-    background-blend-mode: multiply;
+    background-blend-mode: var(--texture-blend);
     -webkit-font-smoothing: antialiased;
   }
 
@@ -117,8 +120,8 @@
   .bg-wash,
   .bg-background {
     background-image: var(--texture-paper);
-    background-size: 300px 300px;
+    background-size: 150px 150px;
     background-repeat: repeat;
-    background-blend-mode: multiply;
+    background-blend-mode: var(--texture-blend);
   }
 }
