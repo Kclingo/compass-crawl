@@ -11,12 +11,14 @@ import AdminProvidersTab from '@/components/admin/AdminProvidersTab';
 import AdminTonightTab from '@/components/admin/AdminTonightTab';
 import AdminGuestDesk from '@/components/admin/AdminGuestDesk';
 import AdminFeedbackTab from '@/components/admin/AdminFeedbackTab';
+import AdminDonationsTab from '@/components/admin/AdminDonationsTab';
 
 const TABS = [
   { key: 'tonight', label: 'Tonight' },
   { key: 'providers', label: 'Providers' },
   { key: 'guests', label: 'Guests' },
   { key: 'feedback', label: 'Feedback' },
+  { key: 'giving', label: 'Giving' },
   { key: 'event', label: 'Event setup' },
   { key: 'charities', label: 'Charities' },
 ];
@@ -144,6 +146,7 @@ export default function Admin({ initialTab = 'tonight' }) {
       {event && tab === 'providers' && <AdminProvidersTab event={event} />}
       {event && tab === 'guests' && <AdminGuestDesk event={event} />}
       {event && tab === 'feedback' && <AdminFeedbackTab event={event} />}
+      {event && tab === 'giving' && <AdminDonationsTab event={event} />}
       {event && tab === 'event' && <AdminEventsTab event={event} onChanged={loadEvents} />}
       {tab === 'charities' && <AdminCharitiesTab />}
     </div>
