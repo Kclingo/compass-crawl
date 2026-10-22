@@ -34,6 +34,8 @@
     --chart-4: 220 14% 38%;
     --chart-5: 43 38% 80%;
     --radius: 1rem;
+    /* Passport security-paper texture, blended into the page and card surfaces */
+    --texture-paper: url('https://media.base44.com/images/public/6ac40fbefb81547231db6c7d/890212827_generated_image.png');
     --font-heading: 'Cinzel', Georgia, serif;
     --font-body: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
     --font-display: 'Cinzel', Georgia, serif;
@@ -94,10 +96,29 @@
 
   body {
     @apply bg-background text-foreground font-body;
+    background-image: var(--texture-paper);
+    background-size: 340px 340px;
+    background-repeat: repeat;
+    background-blend-mode: multiply;
     -webkit-font-smoothing: antialiased;
   }
 
   h1, h2, h3, h4 {
     @apply font-heading tracking-wide;
+  }
+}
+
+@layer components {
+  /* Cards, panels, headers and footers carry the same paper grain */
+  .bg-card,
+  .bg-popover,
+  .bg-secondary,
+  .bg-muted,
+  .bg-wash,
+  .bg-background {
+    background-image: var(--texture-paper);
+    background-size: 300px 300px;
+    background-repeat: repeat;
+    background-blend-mode: multiply;
   }
 }
